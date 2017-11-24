@@ -1,0 +1,192 @@
+# This is a test file of how an ONEI program should look like. It is intended to
+# model the Daisy World model. For details look at:
+# http://ccl.northwestern.edu/netlogo/models/Daisyworld
+
+############# 
+############# 
+##         ## 
+##  SETUP  ## 
+##         ## 
+############# 
+############# 
+
+#Sembrar blancas    (Usuario fija la cantidad
+#Sembrar neegras
+#Generar edad para cada flor
+#Calcular temperatura promedio
+clickCount <- 0;
+
+
+################### 
+################### 
+##               ## 
+##  ENVIRONMENT  ## 
+##               ## 
+################### 
+################### 
+environment DaisyworldEnvironmnet:
+    #The environment of Daisyworld
+    attributes:
+        int xDim;
+        int yDim;
+        float sun;
+        float whiteAlbedo;
+        float blackAlbedo;
+        float patchAlbedo;
+        float whiteDaisies;
+        float blackDaisies,
+        int maxLife;
+        float globalTemp;           #? calcular
+        int clickCount <- 0;
+        array pointer DaisiesLocation;
+        end
+    function __creator:
+    end
+    
+    function click:
+    end
+    
+    function whiteDaisiesNeighbors:
+    end 
+    
+    function blackDaisiesNeighbors:
+    end 
+    
+    function neighborsTemperature:
+    end
+end
+    
+############### 
+############### 
+##           ## 
+##  PATCHES  ## 
+##           ## 
+############### 
+############### 
+
+################## 
+# DAISYLLOCATION # 
+##################
+patch daisyLocation:
+    #This is the patch where the daisy lives.
+    attributes:
+        int xCoord;
+        int yCoord;
+        float temperature;
+        float albedo;
+        int state;
+    end
+    
+    function __creator:
+        input:
+            int X;
+            int Y;
+            float S;
+            float A;
+            int St;   #Estado 0 sin margarita, 1 margarita blanca, 2 margarita negra. ?
+        end
+        xCoord = X;
+        yCoord = Y;
+        sun = S;
+        albedo = A;
+        state =  St;
+    end
+    
+    function isMyPatchEmpty:
+        output:
+            bool empty;
+        end
+        empty = not state:
+    end
+    
+    function patchTemperature:          #LocalHeating?
+        input:
+            float daisyAlbedo;
+        end
+        float temperatureD = 0;
+        float temperatureN;
+        if isMyPatchEmpty;
+            temperatureD = (1-albedo)*sun;
+        elseif
+            temperatureD = (1- daisyAlbedo)*sun;
+        end
+                                            #Difusion?
+        
+    end
+end
+    
+    
+############## 
+############## 
+##          ## 
+##  AGENTS  ## 
+##          ## 
+############## 
+############## 
+
+############## 
+# WHITEDAISY # 
+##############  
+agent whiteDaisy:
+    attributes:
+        float albedo;
+        float reproduction; #cambiar a array # O se define de la función parabólica y no hay que tenelo como atributo?
+        int life; 
+        bool alive;
+        pointer daisyLocation myDaisyLocation;
+    
+    function __creator:
+        alive =  true;
+        albedo = whiteAlbedo;
+        repDaisy = repDaisy;
+        life = maxLife;
+    end
+    
+    function daisyDies:
+        if life == 0;
+            alive = false;    
+        end
+    end
+    
+    function reproduction:
+        if (parábola(temperatura) en rango reproduction ?);
+            myDaisyLocation.freePatch.whiteDaisy;
+        end
+    end
+    
+end
+
+############## 
+# BLACKDAISY # 
+############## 
+agent blackDaisy:
+    attributes:
+        float albedo;
+        float reproduction; #cambiar a array
+        int life; 
+        pointer daisyLocation myDaisyLocation;
+        
+    function __creator:
+        albedo = blackAlbedo;
+        repDaisy = repDaisy;
+        life = maxLife;
+    end
+    
+    function daisyDies:
+        if life == 0;
+            alive = false;    
+        end
+    end
+    
+    function reproduction:
+        if (parábola(temperatura) en rango reproduction ?);
+            myDaisyLocation.freePatch.blackDaisy;
+        end
+    end
+    
+    function click:
+        #calcular temperatura 
+        daisyDies;
+        reproduction;
+    
+end

@@ -1,0 +1,157 @@
+# This is a test file of how an ONEI program should look like. It is intended to
+# model John Conway's Game of Life.
+
+
+############# 
+############# 
+##         ## 
+##  SETUP  ## 
+##         ## 
+############# 
+############# 
+
+
+
+################### 
+################### 
+##               ## 
+##  ENVIRONMENT  ## 
+##               ## 
+################### 
+################### 
+environment GameOfLifeEnvironment:
+    # The environment of the game of life
+    attributes:
+        int xDim;
+        int yDim;
+        float probAlive;
+        array pointer CellLocation;
+        int clickCount <- 0;
+    end
+    
+    function creator:
+        pass
+    end
+    
+    function click:
+        pass
+    end
+    
+    function neighborsAlive:
+        pass
+    end 
+    
+end
+
+
+
+
+############### 
+############### 
+##           ## 
+##  PATCHES  ## 
+##           ## 
+############### 
+############### 
+
+
+################ 
+# CELLLOCATION # 
+################ 
+patch CellLocation:
+    # This is the patch where the cell lives.
+    attributes:
+        int xCoord;
+        int yCoord;
+        pointer Cell myCell;
+    end
+    
+    function __creator:
+        input:
+            int X;
+            int Y;
+            bool state;
+        end
+        xCoord = X;
+        yCoord = Y;
+        myCell = Cell(state);
+    end
+    
+    function isMyCellAlive:
+        output:
+            bool deadOrAlive;
+        end
+        deadOrAlive = myCell.isAlive:
+    end
+    
+    function neighborsAlive:
+        output:
+            int K;
+        end
+        K = self.environment.neighborsAlive(xCoord,yCoord);
+    end
+    
+    function click:
+        myCell.click();
+    end
+end
+
+
+
+
+
+############## 
+############## 
+##          ## 
+##  AGENTS  ## 
+##          ## 
+############## 
+############## 
+
+
+######## 
+# CELL # 
+######## 
+agent Cell:
+    # This agent is the cell that is dead or alive in the game of life.
+    attributes:
+        bool currentState;
+        bool futureState;
+        pointer CellLocation myCellLocation;
+    end
+    
+    function __creator:
+        input:
+            bool state;
+        end
+        currentState <- state;
+        futureState <- false;
+    end
+    
+    function isAlive:
+        output:
+            bool deadOrAlive;
+        end
+        deadOrAlive = currentState;
+    end
+    
+    function nextStateDetermination:
+        variables:
+           int k; 
+        end
+        k = self.patch.neighborsAlive();
+        if k < 2 and currentState:
+            futureState = false;
+        elseif k<=3 and k>=2 and currentState:
+            futureState = true;
+        elseif k>3 and currentState:
+            futureState = false;
+        elseif k == 3 and not currentState:
+            futureState = true;
+        end
+    end
+    
+    function click:
+        currentState = futureState;
+    end 
+end 

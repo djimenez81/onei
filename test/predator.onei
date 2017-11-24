@@ -1,0 +1,235 @@
+# This is a test file of how an ONEI program should look like. It is intended to
+# model the wolf and sheep model. For details look at:
+# http://ccl.northwestern.edu/netlogo/models/WolfSheepPredation
+
+
+############# 
+############# 
+##         ## 
+##  SETUP  ## 
+##         ## 
+############# 
+############# 
+
+#Poner zacate y tierra en todos random
+#Poner ovejas y lobos random
+
+
+################### 
+################### 
+##               ## 
+##  ENVIRONMENT  ## 
+##               ## 
+################### 
+################### 
+environment PredatorEnvironment:
+    #The environment of WolfSheepPredation
+    attributes:
+        int xDim;
+        int yDim;
+        float repWolf;
+        float repSheep;
+        int repGrass;
+        int energyDef;
+        array pointer wolvesLocation;
+        array pointer sheepsLocation;
+        array pointer grassLocation;
+        int clickCount <- 0;
+    end
+    function __creator:
+    end
+    
+    function click:
+    end
+    
+    function sheepsNeighbor:
+        #Retorna espacio con oveja random
+    end 
+    
+    function grassNeighbor:
+        #Retorna espacio con césped random
+    end
+end
+
+
+############### 
+############### 
+##           ## 
+##  PATCHES  ## 
+##           ## 
+############### 
+############### 
+
+
+############ 
+# LOCATION # 
+############ 
+patch Location: 
+    attributes:
+        int growTime;
+        int time;
+        bool grass;
+    end
+    
+    function __creator:
+        input:
+            int G;
+            int T;
+            bool stateG;
+        end
+        growTime = G;
+        time = T;
+        myGrass = stateG;  
+    end
+    
+    
+    function grassDetermination:
+       input:
+            int time;
+        end
+        if time == growTime;
+            grass = true;
+            time = 0;
+        end
+    end
+    
+    function isGrass:
+        output:
+            bool G;
+        end
+        G = grass;
+    end
+    
+    function freePatch:
+        output:
+            pointer patch;
+        end
+        
+        patch = self.environment.grassNeighbor(xCoord,yCoord);
+    end
+    
+    function nearSheep:
+        output:
+            pointer sheep;
+        end
+        sheep = self.environment.sheepsNeighbor(xCoord,yCoord);
+    end
+    
+    function click:
+        if not grass;
+            time = time + 1;
+        end
+    end
+end    
+
+
+############## 
+############## 
+##          ## 
+##  AGENTS  ## 
+##          ## 
+############## 
+############## 
+
+
+######### 
+# SHEEP # 
+######### 
+agent Sheep:
+    attributes:
+        bool alive;
+        int energy;
+        float probability;
+        pointer SheepLocation mySheepLocation
+    end
+    
+    function __creator:
+        input:
+            int E;
+        end
+        alive = true;
+        energy = E;
+        probability = repSheep;
+    end
+    
+    function eatGrass:
+        pointer location = mySheepLocation.patch.freePatch;           #Corroborar
+        if location not NULL   #NULL???
+            mySheepLocation = location;
+            location.patch.grass =  false;
+            energy = energy -1;
+        end
+    end
+    
+    function sheepDies:
+        if energy == 0;
+            alive = false;
+            #LIBERAR PUNTERO
+        end
+    end
+    
+    function reproduction:
+        if random < probability;                 #Corroborar random?
+            energy = energy/2;
+            mySheepLocation.freePatch.Sheep(energy/2);      #Crear oveja nueva en posición vacía?
+        end
+    end
+    
+    function click:
+        eatGrass;
+        sheepDies;
+        reproduction;
+    end
+end
+
+
+######### 
+# WOLF # 
+######### 
+agent Wolf:
+    attributes:
+        bool alive;
+        int energy;
+        float probability;
+        pointer WolfLocation myWolfLocation
+    end
+    
+    function __creator:
+        input:
+            int E;
+        end
+        alieve = true;
+        energy = E;
+        probability = repWolf;
+    end
+    
+     function eatSheep:
+        pointer sheep = myWolfLocation.patch.nearSheep;           #Corroborar
+        if location not NULL   #NULL???
+            myWolfLocation = sheep;
+            sheep.alive =  false;
+            energy = energy -1;
+        end
+    end
+    
+    function wolfDies:
+        if energy == 0;
+            alive = false;
+            #LIBERAR PUNTERO
+        end
+    end
+    
+    function reproduction:
+        if random < probability;                 #Corroborar random?
+            energy = energy/2;
+            myWolfLocation.freePatch.Wolf(energy/2);      #Crear lobo nueva en posición vacía?
+        end
+    end
+    
+    function click:
+        eatSheep;
+        wolfDies;
+        reproduction;
+    end
+    
+end
