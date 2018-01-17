@@ -85,7 +85,7 @@ def oneiLexedXML(infile,outfile):
 #   BIG ERROR:
 #   What happens if there is only one line. Have to fix.
     curFirstToken  = tokenLine[counter-1][1]
-    nextFirstToken = tokenLine[counter][1]
+    nextFirstToken = curFirstToken
 
     root = ET.Element('OneiLexedOutput')
     line = ET.SubElement(root,'line',{'number':str(tokenLine[counter-1][0])})
@@ -99,12 +99,12 @@ def oneiLexedXML(infile,outfile):
         if tokenN >= nextFirstToken and counter < lastLine:
             line = ET.SubElement(root,'line',
                 {'number':str(tokenLine[counter][0])})
-            curFirstToken = nextFirstToken
+            curFirstToken = nextFirstToken +1
             counter += 1
             if counter == lastLine:
                 nextFirstToken += len(theLines[-1][1])
             else:
-                nextFirstToken = tokenLine[counter][1]
+                nextFirstToken = tokenLine[counter-1][1]
         token = theStream.next()
     rough = ET.tostring(root)
     reparsed = minidom.parseString(rough)
