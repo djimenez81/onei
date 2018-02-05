@@ -85,7 +85,7 @@ def oneiLexedXML(infile,outfile):
 #   BIG ERROR:
 #   What happens if there is only one line. Have to fix.
     curFirstToken  = tokenLine[counter-1][1]
-    nextFirstToken = curFirstToken
+    nextFirstToken = curFirstToken #[counter-1][1]
 
     root = ET.Element('OneiLexedOutput')
     line = ET.SubElement(root,'line',{'number':str(tokenLine[counter-1][0])})
