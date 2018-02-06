@@ -1,3 +1,4 @@
-*.xml 
-scr/py/try.onei 
-scr/py/script.py 
+*.xml
+scr/py/try.onei
+scr/py/script.py
+scr/py/__pycache__/
