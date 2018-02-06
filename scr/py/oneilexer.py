@@ -104,6 +104,7 @@ DOT_READ      = 'DOT'     #
 ######################
 OPERATORS        = ['<-', '=', '==', '!=', '<', '>', '<=', '>=']
 DELIMITERS       = ':;.,([{}])@'
+END_LINE_SYMBOL  = ';'
 CONTINUER_SYMBOL = '...'
 COMMENT_SYMBOL   = '#'
 STRING_SYMBOL    = '\"'
@@ -125,7 +126,7 @@ UNKNOWN   = 'UNKNOWN'
 KEYWORD   = 'KEYWORD'
 NAME      = 'NAME'
 NUMBER    = 'NUMBER'
-
+END_LINE  = 'END_LINE'
 
 
 
@@ -139,14 +140,14 @@ INTEGER   = 'INTEGER'
 # TOKEN DICTIONARIES #
 ######################
 
-KEYWORDS = ['agent',        'and',          'array',        'attributes',   
-            'boolean',      'character',    'dictionary',   'else',     
-            'elseif',       'end',          'environment',  'exchange',     
-            'extends',      'false',        'float',        'for',      
-            'function',     'if',           'import',       'in',       
-            'input',        'integer',      'io',           'item',     
-            'list',         'message',      'not',          'or',       
-            'output',       'pass',         'patch',        'rule',         
+KEYWORDS = ['agent',        'and',          'array',        'attributes',
+            'boolean',      'character',    'dictionary',   'else',
+            'elseif',       'end',          'environment',  'exchange',
+            'extends',      'false',        'float',        'for',
+            'function',     'if',           'import',       'in',
+            'input',        'integer',      'io',           'item',
+            'list',         'message',      'not',          'or',
+            'output',       'pass',         'patch',        'rule',
             'self',         'string',       'table',        'true',
             'variables',    'while',        'xor']
 
@@ -244,13 +245,13 @@ class OneiStream:
             token = self._stream[self._nextP-2]
             self._nextP -= 1
             return token
-    
+
     def final(self):
         return self._stream[-1]
-    
+
     def toBeginning(self):
         self._nextP = 0
-    
+
     def first(self):
         self._nextP = 0
         return self.next()
@@ -317,7 +318,13 @@ class OneiLexer:
         # This method separates each line on the pieces that will be tokenized.
         thisUnit = ''
         for char in line:
-            if char == COMMENT_SYMBOL and self._currentState != COMMENT_READ:
+            if char == END_LINE_SYMBOL:
+                if self._currentState != SPACE_READ and len(thisUnit) > 0:
+                    self._stream.add(OneiToken(thisUnit,self._currentState))
+                    self._currentState = SPACE_READ
+                    thisUnit = ''
+                self._stream.add(OneiToken(END_LINE_SYMBOL,END_LINE))
+            elif char == COMMENT_SYMBOL and self._currentState != COMMENT_READ:
                 if len(thisUnit) > 0:
                     self._stream.add(OneiToken(thisUnit, self._currentState))
                 self._currentState = COMMENT_READ
@@ -478,5 +485,3 @@ class OneiLexer:
             # More lines might be splitted in the future, so, state must be left
             # in the appropriate state.
             self._currentState = SPACE_READ
-
-
