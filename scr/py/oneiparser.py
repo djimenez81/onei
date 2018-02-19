@@ -63,19 +63,6 @@ import pdb #; pdb.set_trace()
 from oneilexer import OneiLexer
 
 
-########################
-########################
-########################
-###                  ###
-###                  ###
-###      PARSER      ###
-###                  ###
-###                  ###
-########################
-########################
-########################
-
-
 ######################
 ######################
 ##                  ##
@@ -83,24 +70,24 @@ from oneilexer import OneiLexer
 ##                  ##
 ######################
 ######################
-DEFINERS  = ['agent',   'environment',  'exchange', 'function', 'io',   
-            'item',     'message',      'patch',    'rule',     'table']
+DEFINERS  = ['agent',   'environment',  'exchange', 'function', 'io',
+            'item',     'message',      'patch',    'rule',     'setup',
+            'table']
 
 SCOPERS   = ['for', 'if','while']
 
-DECLARERS = ['attributes','input', 'output','variables'] 
+ELSERS    = ['elseif', 'else']
 
-KEYWORDY = ['and', 'array', 'boolean', 'character', 'dictionary', 'else', 
-            'elseif', 'extends', 'false', 'float', 'import', 'in',  
-            'integer', 'list', 'not', 'or', 'pass', 'self', 'string', 'true', 
-            'xor']
+DECLARERS = ['attributes','input', 'output','variables']
+
+KEYWORDY = ['and',      'array',    'boolean',  'character',    'dictionary',
+            'extends',  'false',    'float',    'import',       'in',
+            'integer',  'list',     'not',      'or',           'pass',
+            'self',     'string',   'true',     'xor']
 
 END_SING   = 'end'
-SEMI_COLON = ';'
+# SEMI_COLON = ';'
 COLON      = ':'
-
-
-
 
 #############
 #############
@@ -109,8 +96,43 @@ COLON      = ':'
 ##         ##
 #############
 #############
-# def splitStream(stream):
-#     pass
+def splitStream(stream):
+    # This function makes a first pass to the stream received, trying to split
+    # it into its main components.
+    streamArray = []
+    tempStream = OneiStream()
+    stream.toBeginning()
+    N = stream.length()
+    k = 0
+    scopeCount = 0
+    scoping    = False
+    initiating = True
+    declaring  = False
+    while k < N:
+        k += 1
+        tok = stream.next()
+        tempStream.add(tok)
+        content = tok.getContent()
+        if initiating:
+            initiating = False
+            if content in DEFINERS:
+                scoping = True
+                scopeCount += 1
+        elif scoping:
+            if content in DECLARERS and not declaring:
+                declaring = True
+                scopeCount += 1
+            elif content in SCOPERS:
+                scopeCount += 1
+            elif content == END_SING:
+                scopeCount -= 1
+                if scopeCount == 0:
+                    streamArray.append(tempStream)
+                    tempStream = OneiStream()
+                    initiating = True
+        else:
+            pass
+    return streamArray
 
 
 #############
@@ -121,7 +143,7 @@ COLON      = ':'
 #############
 #############
 class OneiASTNode:
-    # This class implements a whatever
+    # This class implements a node in the Abstract Syntax Tree (AST).
 
     ##############
     # ATTRIBUTES #
@@ -141,21 +163,19 @@ class OneiASTNode:
     #######################
     def setNodeType(self,nodeType):
         self._nodeType = nodeType
-    
+
     def getNodeType(self):
         return self._nodeType
-    
-    
+
     def setChildren(self,children):
         self._children = children
-    
-    
+
     def getChildren(self):
         return self._children
-    
+
     def setValue(self,value):
         self._nodeValue = value
-    
+
     def getValue(self):
         return self._nodeValue
 
@@ -186,7 +206,7 @@ class OneiAST:
     #######################
     def getRoot(self):
         return self._root
-    
+
     def setRoot(self,root):
         self._root = root
 
@@ -195,7 +215,6 @@ class OneiAST:
     ###########
 
 
-'''
 
 class OneiParser:
     # This class implements a whatever
@@ -203,8 +222,8 @@ class OneiParser:
     ##############
     # ATTRIBUTES #
     ##############
-    _imports = []
-    
+    # _imports = []
+
 
     ###########
     # CREATOR #
@@ -215,22 +234,15 @@ class OneiParser:
     #######################
     # GETTERS AND SETTERS #
     #######################
-    def setImports(self,imports):
-        self._imports = imports
-    
-    def getImports(self):
-        return self._imports
+    # def setImports(self,imports):
+    #     self._imports = imports
+
+    # def getImports(self):
+    #     return self._imports
 
     ###########
     # METHODS #
     ###########
     def parse(self,stream):
         tokenTotal = len(stream)
-        
-        
-        
         pass
-
-
-'''
-

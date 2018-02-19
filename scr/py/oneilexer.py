@@ -51,12 +51,6 @@
 ####################
 
 #
-# Sep. 6, 2017: There might be a problem when the thing is reading strings. It
-#               could be important to fix it some time soon.
-#
-#
-
-
 
 ###############
 ###############
@@ -66,20 +60,6 @@
 ###############
 ###############
 import pdb #; pdb.set_trace()
-
-
-
-#######################
-#######################
-#######################
-###                 ###
-###                 ###
-###      LEXER      ###
-###                 ###
-###                 ###
-#######################
-#######################
-#######################
 
 
 ######################
@@ -103,7 +83,7 @@ DOT_READ      = 'DOT'     #
 # SPECIAL CHARACTERS #
 ######################
 OPERATORS        = ['<-', '=', '==', '!=', '<', '>', '<=', '>=']
-DELIMITERS       = ':;.,([{}])@'
+DELIMITERS       = ':.,([{}])@'
 END_LINE_SYMBOL  = ';'
 CONTINUER_SYMBOL = '...'
 COMMENT_SYMBOL   = '#'
@@ -148,8 +128,8 @@ KEYWORDS = ['agent',        'and',          'array',        'attributes',
             'input',        'integer',      'io',           'item',
             'list',         'message',      'not',          'or',
             'output',       'pass',         'patch',        'rule',
-            'self',         'string',       'table',        'true',
-            'variables',    'while',        'xor']
+            'self',         'setup',         'string',      'table',
+            'true',         'variables',    'while',        'xor']
 
 #############
 #############
@@ -229,8 +209,6 @@ class OneiStream:
         self._tokenN += 1
 
     def next(self):
-        # pdb.set_trace()
-        # print(self._nextP)
         if self._tokenN > self._nextP:
             token = self._stream[self._nextP]
             self._nextP += 1
@@ -255,6 +233,15 @@ class OneiStream:
     def first(self):
         self._nextP = 0
         return self.next()
+
+    def search(self,content):
+        self.toBeginning()
+        isit = False
+        k = 0
+        while (k < self._tokenN) and (not isit):
+            isit = (content == self.next().getContent())
+            k += 1
+        return isit
 
 
 class OneiLexer:
