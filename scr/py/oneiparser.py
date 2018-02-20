@@ -60,7 +60,7 @@
 ###############
 ###############
 import pdb #; pdb.set_trace()
-from oneilexer import OneiLexer
+from oneilexer import *
 
 
 ######################
@@ -86,7 +86,6 @@ KEYWORDY = ['and',      'array',    'boolean',  'character',    'dictionary',
             'self',     'string',   'true',     'xor']
 
 END_SING   = 'end'
-# SEMI_COLON = ';'
 COLON      = ':'
 
 #############
@@ -113,6 +112,10 @@ def splitStream(stream):
         tok = stream.next()
         tempStream.add(tok)
         content = tok.getContent()
+        if len(streamArray) > 0:
+            pdb.set_trace() ##############################
+            if content == END_SING:
+                print(END_SING)
         if initiating:
             initiating = False
             if content in DEFINERS:
@@ -122,16 +125,26 @@ def splitStream(stream):
             if content in DECLARERS and not declaring:
                 declaring = True
                 scopeCount += 1
+            elif content in DEFINERS:
+                scopeCount += 1
             elif content in SCOPERS:
                 scopeCount += 1
             elif content == END_SING:
                 scopeCount -= 1
+                if declaring:
+                    declaring = False
                 if scopeCount == 0:
                     streamArray.append(tempStream)
                     tempStream = OneiStream()
                     initiating = True
+                    scoping = False
         else:
-            pass
+            if content == END_LINE_SYMBOL:
+                streamArray.append(tempStream)
+                tempStream = OneiStream()
+                initiating = True
+        if k == N - 1:
+            streamArray.append(tempStream)
     return streamArray
 
 
