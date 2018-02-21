@@ -50,6 +50,16 @@
 ####################
 ####################
 ####################
+## ABOUT splitStream FUNCTION:
+# As it is implemented right now, it works only if there is no errors in the
+# stream. The function should check for certain simple errors. Some of them
+# should be:
+#
+# 1. There are no missing or extra end statements.
+# 2. There is no improper nesting, (No object can be nested inside another, etc)
+# 3. Keywords, particularly those that are contained in DEFINERS, SCOPERS,
+#    ELSERS, DECLARERS and the END_SING, are not used outside of context.
+
 
 
 ###############
@@ -112,10 +122,6 @@ def splitStream(stream):
         tok = stream.next()
         tempStream.add(tok)
         content = tok.getContent()
-        if len(streamArray) > 0:
-            pdb.set_trace() ##############################
-            if content == END_SING:
-                print(END_SING)
         if initiating:
             initiating = False
             if content in DEFINERS:
@@ -143,7 +149,8 @@ def splitStream(stream):
                 streamArray.append(tempStream)
                 tempStream = OneiStream()
                 initiating = True
-        if k == N - 1:
+        if k == N - 1 and tempStream.length() > 0:
+            # We should verify if this last conditional is ever reached twice.
             streamArray.append(tempStream)
     return streamArray
 
