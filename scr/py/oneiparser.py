@@ -162,42 +162,22 @@ def splitStream(stream):
 ##         ##
 #############
 #############
-class OneiASTNode:
+# class OneiASTNode:
     # This class implements a node in the Abstract Syntax Tree (AST).
 
     ##############
     # ATTRIBUTES #
     ##############
-    _nodeType  = ''
-    _nodeValue = ''
-    _children  = []
 
     ###########
     # CREATOR #
     ###########
-    def __init__(self):
-        pass
+#     def __init__(self):
+#         pass
 
     #######################
     # GETTERS AND SETTERS #
     #######################
-    def setNodeType(self,nodeType):
-        self._nodeType = nodeType
-
-    def getNodeType(self):
-        return self._nodeType
-
-    def setChildren(self,children):
-        self._children = children
-
-    def getChildren(self):
-        return self._children
-
-    def setValue(self,value):
-        self._nodeValue = value
-
-    def getValue(self):
-        return self._nodeValue
 
     ###########
     # METHODS #
@@ -213,7 +193,6 @@ class OneiAST:
     ##############
     # ATTRIBUTES #
     ##############
-    _root = OneiASTNode()
 
     ###########
     # CREATOR #
@@ -224,11 +203,6 @@ class OneiAST:
     #######################
     # GETTERS AND SETTERS #
     #######################
-    def getRoot(self):
-        return self._root
-
-    def setRoot(self,root):
-        self._root = root
 
     ###########
     # METHODS #
@@ -263,6 +237,3 @@ class OneiParser:
     ###########
     # METHODS #
     ###########
-    def parse(self,stream):
-        tokenTotal = len(stream)
-        pass
