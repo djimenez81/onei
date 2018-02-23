@@ -60,6 +60,7 @@
 ###############
 ###############
 import pdb #; pdb.set_trace()
+from os.path import basename, dirname
 
 
 ######################
@@ -257,13 +258,20 @@ class OneiLexer:
                                 # if the last charater read had been a space.
     _tokenLine     = [] # This variable contains a variable that keeps count of
                         # what line a token is.
+    _path          = ''
+    _name          = ''
 
     ###########
     # CREATOR #
     ###########
     def __init__(self):
-        pass
-#        self._stream = OneiStream();
+        self._numberOfLines = 0
+        self._stream        = OneiStream()
+        self._lines         = []
+        self._currentState  = SPACE_READ
+        self._tokenLine     = []
+        _path          = ''
+        _name          = ''
 
     #######################
     # GETTERS AND SETTERS #
@@ -277,12 +285,27 @@ class OneiLexer:
     def getTokenLine(self):
         return self._tokenLine
 
+    def getPath(self):
+        return self._path
+
+    def getName(self):
+        return self._name
+
+
     ###########
     # METHODS #
     ###########
     def tokenize(self, filename):
         # This method takes the file, and performes the tokenization, that is,
         # it realizes the basic lexical analysis.
+        # We first get the path and names of the module.
+        self._path = dirname(filename)
+        fullname = basename(filename)
+        if '.' in fullname:
+            idx = fullname.index('.')
+            self._name = fullname[:idx]
+        else:
+            self._name = fullname
         theFile = open(filename)
         # There should be a way to check if it is a text file or not.
         for line in theFile:
