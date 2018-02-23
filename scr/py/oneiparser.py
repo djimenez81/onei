@@ -162,18 +162,171 @@ def splitStream(stream):
 ##         ##
 #############
 #############
-# class OneiASTNode:
+class oneiStatementNode:
     # This class implements a node in the Abstract Syntax Tree (AST).
 
     ##############
     # ATTRIBUTES #
     ##############
+    _statementType  = ''
+    _headExpression = []
+    _tailExpression = []
+
 
     ###########
     # CREATOR #
     ###########
-#     def __init__(self):
-#         pass
+    def __init__(self):
+        pass
+
+    #######################
+    # GETTERS AND SETTERS #
+    #######################
+
+    ###########
+    # METHODS #
+    ###########
+
+
+
+
+
+class OneiArgumentNode:
+    # This class implements an argument node in the Abstract Syntax Tree (AST)
+    # for Onei
+
+    ##############
+    # ATTRIBUTES #
+    ##############
+    _structureType = ''
+    _dataType      = ''
+    _idName        = ''
+    _defaultVal    = ''
+
+    ###########
+    # CREATOR #
+    ###########
+    def __init__(self):
+        pass
+
+    #######################
+    # GETTERS AND SETTERS #
+    #######################
+
+    ###########
+    # METHODS #
+    ###########
+
+
+
+
+
+class OneiFunctionNode:
+    # This class implements a function node in the Abstract Syntax Tree (AST).
+
+    ##############
+    # ATTRIBUTES #
+    ##############
+    _inputList     = []
+    _outputList    = []
+    _variableList  = []
+    _statementList = []
+    _functionName  = ''
+
+    ###########
+    # CREATOR #
+    ###########
+    def __init__(self):
+        pass
+
+    #######################
+    # GETTERS AND SETTERS #
+    #######################
+
+    ###########
+    # METHODS #
+    ###########
+
+
+
+
+
+class OneiSetUpNode:
+    # This class implements a set up node in the Abstract Syntax Tree (AST) for
+    # Onei.
+
+    ##############
+    # ATTRIBUTES #
+    ##############
+    _statementList = []
+    _attributeList = []
+    _functionList  = []
+    _searchTable   = {}
+
+    ###########
+    # CREATOR #
+    ###########
+    def __init__(self):
+        pass
+
+    #######################
+    # GETTERS AND SETTERS #
+    #######################
+
+    ###########
+    # METHODS #
+    ###########
+
+
+
+
+
+class OneiImportNode:
+    # This class implements a node in the Abstract Syntax Tree (AST) for Onei.
+
+    ##############
+    # ATTRIBUTES #
+    ##############
+    _source     = ''
+    _importType = ''
+    _importList =[]
+
+    ###########
+    # CREATOR #
+    ###########
+    def __init__(self):
+        pass
+
+    #######################
+    # GETTERS AND SETTERS #
+    #######################
+
+    ###########
+    # METHODS #
+    ###########
+
+
+
+
+
+class OneiObjectNode:
+    # This class implements an object node in the Abstract Syntax Tree (AST) for
+    # Onei.
+
+    ##############
+    # ATTRIBUTES #
+    ##############
+    _objectType      = ''
+    _objectClassName = ''
+    _attributeList   = []
+    _functionList    = []
+    _searchTable     = {}
+
+    ###########
+    # CREATOR #
+    ###########
+    def __init__(self):
+        pass
 
     #######################
     # GETTERS AND SETTERS #
@@ -188,11 +341,17 @@ def splitStream(stream):
 
 
 class OneiAST:
-    # This class implements a whatever
+    # This class implements an Abstract Syntax Tree (AST) for Onei.
 
     ##############
     # ATTRIBUTES #
     ##############
+    _imports      = []
+    _setup        = []
+    _objectList   = []
+    _functionList = []
+    _typeTable    = []
+    _searchTable  = {}
 
     ###########
     # CREATOR #
@@ -211,12 +370,12 @@ class OneiAST:
 
 
 class OneiParser:
-    # This class implements a whatever
+    # This class implements a parser for Onei.
 
     ##############
     # ATTRIBUTES #
     ##############
-    # _imports = []
+    _ASTList = []
 
 
     ###########
@@ -228,11 +387,6 @@ class OneiParser:
     #######################
     # GETTERS AND SETTERS #
     #######################
-    # def setImports(self,imports):
-    #     self._imports = imports
-
-    # def getImports(self):
-    #     return self._imports
 
     ###########
     # METHODS #
