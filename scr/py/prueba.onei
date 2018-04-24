@@ -1,0 +1,6 @@
+environment guarever:
+  variables:
+    integer thingy <- 2;
+  end
+  thingy = 1;
+end

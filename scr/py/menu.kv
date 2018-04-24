@@ -1,0 +1,17 @@
+#File name: menu.kv
+<MenuButton@ToggleButton>:
+    size_hint: None,None
+    size: 48,24
+    group: 'menu'
+
+<Menu@GridLayout>:
+    cols: 4
+    padding: 2
+    MenuButton:
+        text: 'File'
+    MenuButton:
+        text: 'Edit'
+    MenuButton:
+        text: 'Debug'
+    MenuButton:
+        text: 'Help'

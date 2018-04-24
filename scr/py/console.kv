@@ -1,0 +1,18 @@
+from kivy.modules.console import Console, ConsoleAddon
+
+class ConsoleAddonFps(ConsoleAddon):
+    def init(self):
+        self.lbl = ConsoleLabel(text="0 Fps")
+        self.console.add_toolbar_widget(self.lbl, right=True)
+
+    def activate(self):
+        self.event = Clock.schedule_interval(self.update_fps, 1 / 2.)
+
+    def deactivated(self):
+        self.event.cancel()
+
+    def update_fps(self, *args):
+        fps = Clock.get_fps()
+        self.lbl.text = "{} Fps".format(int(fps))
+
+Console.register_addon(ConsoleAddonFps)
