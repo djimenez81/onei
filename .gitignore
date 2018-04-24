@@ -1,3 +1,4 @@
 *.xml 
+*.pyc
 scr/py/try.onei 
 scr/py/script.py 
