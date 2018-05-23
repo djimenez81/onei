@@ -149,9 +149,6 @@ def splitStream(stream):
                 streamArray.append(tempStream)
                 tempStream = OneiStream()
                 initiating = True
-        if k == N - 1 and tempStream.length() > 0:
-            # We should verify if this last conditional is ever reached twice.
-            streamArray.append(tempStream)
     return streamArray
 
 
