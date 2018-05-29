@@ -1,5 +1,6 @@
 *.xml
 scr/py/try.onei
 scr/py/script.py
-scr/py/myobject.py 
+scr/py/dummy.py
+scr/py/myobject.py
 scr/py/__pycache__/
