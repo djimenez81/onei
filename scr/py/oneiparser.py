@@ -98,6 +98,19 @@ KEYWORDY = ['and',      'array',    'boolean',  'character',    'dictionary',
 END_SING   = 'end'
 COLON      = ':'
 
+
+
+##############
+# NODE TYPES #
+##############
+EMPTY_NODE = 'EMPTY_NODE'
+FULL_IMPORT = 'FULL_IMPORT'
+PARTIAL_IMPORT = 'PARTIAL_IMPORT'
+ROOT_NODE = 'ROOT_NODE'
+
+
+NODE_TYPES = [FULL_IMPORT, PARTIAL_IMPORT, ROOT_NODE]
+
 #############
 #############
 ##         ##
@@ -159,182 +172,57 @@ def splitStream(stream):
 ##         ##
 #############
 #############
-class oneiStatementNode:
+
+
+
+
+class OneiASTNode:
     # This class implements a node in the Abstract Syntax Tree (AST).
 
     ##############
     # ATTRIBUTES #
     ##############
-    _statementType  = ''
-    _headExpression = []
-    _tailExpression = []
+#     _nodeType  = ''
+#     _children  = {}
+#     _next      = []
+#     _value     = ''
 
 
     ###########
     # CREATOR #
     ###########
-    def __init__(self):
-        pass
+    def __init__(self,nodeType):
+        self._children = {}
+        self._next = None
+        self._value = None
+        if nodeType in NODE_TYPES:
+            self._nodeType = nodeType
+        elif nodeType == '':
+            self._nodeType = EMPTY_NODE
+        else:
+            ## Here we should do something to catch errors
+            pass
 
     #######################
     # GETTERS AND SETTERS #
     #######################
+    def getChildren(self):
+        return self._children
+
+    def getNext(self):
+        return self._next
+
+    def getValue(self):
+        return self._value
+
+    def getType(self):
+        return self._nodeType
 
     ###########
     # METHODS #
     ###########
-
-
-
-
-
-class OneiArgumentNode:
-    # This class implements an argument node in the Abstract Syntax Tree (AST)
-    # for Onei
-
-    ##############
-    # ATTRIBUTES #
-    ##############
-    _structureType = ''
-    _dataType      = ''
-    _idName        = ''
-    _defaultVal    = ''
-
-    ###########
-    # CREATOR #
-    ###########
-    def __init__(self):
+    def process(self,stream):
         pass
-
-    #######################
-    # GETTERS AND SETTERS #
-    #######################
-
-    ###########
-    # METHODS #
-    ###########
-
-
-
-
-
-class OneiFunctionNode:
-    # This class implements a function node in the Abstract Syntax Tree (AST).
-
-    ##############
-    # ATTRIBUTES #
-    ##############
-    _inputList     = []
-    _outputList    = []
-    _variableList  = []
-    _statementList = []
-    _functionName  = ''
-
-    ###########
-    # CREATOR #
-    ###########
-    def __init__(self):
-        pass
-
-    #######################
-    # GETTERS AND SETTERS #
-    #######################
-
-    ###########
-    # METHODS #
-    ###########
-
-
-
-
-
-class OneiSetUpNode:
-    # This class implements a set up node in the Abstract Syntax Tree (AST) for
-    # Onei.
-
-    ##############
-    # ATTRIBUTES #
-    ##############
-    _statementList = []
-    _attributeList = []
-    _functionList  = []
-    _searchTable   = {}
-
-    ###########
-    # CREATOR #
-    ###########
-    def __init__(self):
-        pass
-
-    #######################
-    # GETTERS AND SETTERS #
-    #######################
-
-    ###########
-    # METHODS #
-    ###########
-
-
-
-
-
-class OneiImportNode:
-    # This class implements a node in the Abstract Syntax Tree (AST) for Onei.
-
-    ##############
-    # ATTRIBUTES #
-    ##############
-    _source     = ''
-    _importType = ''
-    _importList =[]
-
-    ###########
-    # CREATOR #
-    ###########
-    def __init__(self):
-        pass
-
-    #######################
-    # GETTERS AND SETTERS #
-    #######################
-
-    ###########
-    # METHODS #
-    ###########
-
-
-
-
-
-class OneiObjectNode:
-    # This class implements an object node in the Abstract Syntax Tree (AST) for
-    # Onei.
-
-    ##############
-    # ATTRIBUTES #
-    ##############
-    _objectType      = ''
-    _objectClassName = ''
-    _attributeList   = []
-    _functionList    = []
-    _searchTable     = {}
-
-    ###########
-    # CREATOR #
-    ###########
-    def __init__(self):
-        pass
-
-    #######################
-    # GETTERS AND SETTERS #
-    #######################
-
-    ###########
-    # METHODS #
-    ###########
-
-
-
 
 
 class OneiAST:
@@ -343,22 +231,26 @@ class OneiAST:
     ##############
     # ATTRIBUTES #
     ##############
-    _imports      = []
-    _setup        = []
-    _objectList   = []
-    _functionList = []
-    _typeTable    = []
+#    _imports      = []
+#    _setup        = []
+#    _objectList   = []
+#    _functionList = []
+#    _typeTable    = []
+    _root = OneiASTNode(ROOT_NODE)
     _searchTable  = {}
 
     ###########
     # CREATOR #
     ###########
-    def __init__(self):
-        pass
+    def __init__(self, stream):
+        self._root = OneiASTNode(ROOT_NODE)
+        self._root.process(stream)
 
     #######################
     # GETTERS AND SETTERS #
     #######################
+    def getRoot(self):
+        return self._root
 
     ###########
     # METHODS #
@@ -388,3 +280,8 @@ class OneiParser:
     ###########
     # METHODS #
     ###########
+    def add(self,stream):
+        # This method takes a stream and adds it to the list of sintax trees.
+        tempAST = OneiAST(stream)
+        # tempAST.add(stream)
+        self._ASTList.append(tempAST)
