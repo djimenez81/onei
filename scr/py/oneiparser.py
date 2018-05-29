@@ -103,13 +103,18 @@ COLON      = ':'
 ##############
 # NODE TYPES #
 ##############
-EMPTY_NODE = 'EMPTY_NODE'
-FULL_IMPORT = 'FULL_IMPORT'
-PARTIAL_IMPORT = 'PARTIAL_IMPORT'
-ROOT_NODE = 'ROOT_NODE'
+EMPTY_NODE          = 'EMPTY'
+FULL_IMPORT_NODE    = 'FULL_IMPORT'
+ID_NODE             = 'ID'
+PARTIAL_IMPORT_NODE = 'PARTIAL_IMPORT'
+ROOT_NODE           = 'ROOT'
 
 
-NODE_TYPES = [FULL_IMPORT, PARTIAL_IMPORT, ROOT_NODE]
+NODE_TYPES = [EMPTY_NODE,
+              FULL_IMPORT_NODE,
+              ID_NODE,
+              PARTIAL_IMPORT_NODE,
+              ROOT_NODE]
 
 #############
 #############
@@ -193,8 +198,8 @@ class OneiASTNode:
     ###########
     def __init__(self,nodeType):
         self._children = {}
-        self._next = None
-        self._value = None
+        self._next     = None
+        self._value    = None
         if nodeType in NODE_TYPES:
             self._nodeType = nodeType
         elif nodeType == '':
@@ -222,7 +227,21 @@ class OneiASTNode:
     # METHODS #
     ###########
     def process(self,stream):
-        pass
+        if stream.length() == 0:
+            # This should not occure. Here just in case
+            pass
+        elif stream.length() == 1:
+            self._next     = None
+            self._children = None
+            tok = stream.first()
+            tempType = tok.getType()
+            tempVal  = tok.getContent()
+            if tempType == NAME:
+                self._nodeType = ID_NODE
+                self._value = tempVal
+        else:
+            pass
+
 
 
 class OneiAST:
