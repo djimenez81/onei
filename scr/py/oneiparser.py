@@ -108,11 +108,16 @@ FULL_IMPORT_NODE    = 'FULL_IMPORT'
 ID_NODE             = 'ID'
 PARTIAL_IMPORT_NODE = 'PARTIAL_IMPORT'
 ROOT_NODE           = 'ROOT'
+FLOAT_NODE = 'FLOAT'
+INT_NODE = 'INT'
+
 
 
 NODE_TYPES = [EMPTY_NODE,
+              FLOAT_NODE,
               FULL_IMPORT_NODE,
               ID_NODE,
+              INT_NODE,
               PARTIAL_IMPORT_NODE,
               ROOT_NODE]
 
@@ -184,26 +189,17 @@ def splitStream(stream):
 class OneiASTNode:
     # This class implements a node in the Abstract Syntax Tree (AST).
 
-    ##############
-    # ATTRIBUTES #
-    ##############
-#     _nodeType  = ''
-#     _children  = {}
-#     _next      = []
-#     _value     = ''
-
-
     ###########
     # CREATOR #
     ###########
-    def __init__(self,nodeType):
-        self._children = {}
-        self._next     = None
-        self._value    = None
+    def __init__(self,nodeType=EMPTY_NODE):
+#        self._children = {}
+        self._leftChild  = None
+        self._rightChild = None
+        self._next       = None
+        self._value      = None
         if nodeType in NODE_TYPES:
             self._nodeType = nodeType
-        elif nodeType == '':
-            self._nodeType = EMPTY_NODE
         else:
             ## Here we should do something to catch errors
             pass
@@ -211,8 +207,14 @@ class OneiASTNode:
     #######################
     # GETTERS AND SETTERS #
     #######################
-    def getChildren(self):
-        return self._children
+#     def getChildren(self):
+#         return self._children
+
+    def getLeftChild(self):
+        return self._leftChild
+
+    def getRightChild(self):
+        return self._rightChild
 
     def getNext(self):
         return self._next
@@ -227,18 +229,32 @@ class OneiASTNode:
     # METHODS #
     ###########
     def process(self,stream):
-        if stream.length() == 0:
+        if self._nodeType == ROOT_NODE:
+            self._next       = None
+            self._rightChild = None
+            self._leftChild  = OneiASTNode()
+            self._leftChild.process(stream)
+        elif stream.length() == 0:
             # This should not occure. Here just in case
-            pass
+            print('I received an empty stream. YOU SHOULD NOT BE READING THIS.')
         elif stream.length() == 1:
             self._next     = None
-            self._children = None
+            self._leftChild = None
+            self._rightChild = None
             tok = stream.first()
             tempType = tok.getType()
             tempVal  = tok.getContent()
             if tempType == NAME:
                 self._nodeType = ID_NODE
                 self._value = tempVal
+            elif tempType == NUMBER:
+                if DOT_SYMBOL in tempVal or EXPONENT_SYMBOL in tempVal:
+                    self._nodeType = FLOAT_NODE
+                else:
+                    self._nodeType = INT_NODE
+                self._value = tempVal
+            else:
+                print('I am unsure what I received. YOU SHOULD NOT BE READING THIS')
         else:
             pass
 
@@ -295,6 +311,8 @@ class OneiParser:
     #######################
     # GETTERS AND SETTERS #
     #######################
+    def getASTList(self):
+        return self._ASTList
 
     ###########
     # METHODS #
