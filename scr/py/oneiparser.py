@@ -97,6 +97,7 @@ KEYWORDY = ['and',      'array',    'boolean',  'character',    'dictionary',
 
 END_SING   = 'end'
 COLON      = ':'
+BOOLEANS = ['true','false']
 
 
 
@@ -110,6 +111,7 @@ PARTIAL_IMPORT_NODE = 'PARTIAL_IMPORT'
 ROOT_NODE           = 'ROOT'
 FLOAT_NODE = 'FLOAT'
 INT_NODE = 'INT'
+BOOL_NODE = 'BOOL'
 
 
 
@@ -253,6 +255,10 @@ class OneiASTNode:
                 else:
                     self._nodeType = INT_NODE
                 self._value = tempVal
+            elif tempType == KEYWORD:
+                if tempVal in BOOLEANS:
+                    self._nodeType = BOOL_NODE
+                    self._value = tempVal
             else:
                 print('I am unsure what I received. YOU SHOULD NOT BE READING THIS')
         else:
