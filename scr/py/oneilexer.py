@@ -70,7 +70,9 @@ from os.path import basename, dirname
 ##                  ##
 ######################
 ######################
-
+ELEMENTS = ['agent',   'environment',  'exchange', 'function', 'io',
+            'item',     'message',      'patch',    'rule',     'setup',
+            'table','for', 'if','while','elseif', 'else','attributes','input', 'output','variables','end',':']
 ###############
 # STATE FLAGS #
 ###############
@@ -243,6 +245,21 @@ class OneiStream:
             isit = (content == self.next().getContent())
             k += 1
         return isit
+		
+		
+	def isSimpleStatement(self):
+        self.toBeginning()
+        isit = True
+        i = 0
+        while ( i < self._tokenN) and (isit):
+            i += 1
+            ltoken = self.next().getContent()
+            isit = (ltoken not in ELEMENTS)
+            if(';' == ltoken) and (i != self._tokenN):
+              isit = False
+        return isit
+		
+			
 
 
 class OneiLexer:
