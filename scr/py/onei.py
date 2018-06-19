@@ -117,8 +117,55 @@ def oneiLexedXML(infile,outfile):
 
 
 def oneiParsedXML(lex,outfile):
-    stream = lex.getStream()
+    amy = lex.getStream()
+    parseval = OneiParser()
+    parseval.add(amy)
 
+
+    root = ET.Element('OneiAbstractSyntaxTree')
+#     line = ET.SubElement(root,'line',{'number':str(tokenLine[counter-1][0])})
+    treestan = parseval.getASTList()[0]
+    rootie = treestan.getRoot()
+
+    root = processNode2ParsedXML(root,rootie)
+
+    rough = ET.tostring(root)
+    reparsed = minidom.parseString(rough)
+    pretty   = reparsed.toprettyxml(indent="  ")
+    root     = ET.fromstring(pretty)
+    tree = ET.ElementTree(root)
+    tree.write(outfile)
+
+    return parseval
+
+def processNode2ParsedXML(theTreeElement,theASTNode):
+    theType  = theASTNode.getType()
+    theValue = theASTNode.getValue()
+    theLeft  = theASTNode.getLeftChild()
+    theRight = theASTNode.getRightChild()
+    if theValue != None:
+        thisElement = ET.SubElement(theTreeElement,'OneiASTNode',
+                        {'type':theType, 'value':theValue})
+    else:
+        thisElement = ET.SubElement(theTreeElement,'OneiASTNode',
+                        {'type':theType})
+    if theLeft != None:
+        theLeftElement = ET.SubElement(thisElement,'LeftChild')
+        flag = True
+        while flag:
+            theLeftElement = processNode2ParsedXML(theLeftElement, theLeft)
+            theLeft = theLeft.getNext()
+            if theLeft == None:
+                flag = False
+    if theRight != None:
+        theRightElement = ET.SubElement(thisElement,'RightChild')
+        flag = True
+        while flag:
+            theRightElement = processNode2ParsedXML(theRightElement, theRight)
+            theRight = theRight.getNext()
+            if theRight == None:
+                flag = False
+    return theTreeElement
 
 
 
