@@ -109,19 +109,29 @@ FULL_IMPORT_NODE    = 'FULL_IMPORT'
 ID_NODE             = 'ID'
 PARTIAL_IMPORT_NODE = 'PARTIAL_IMPORT'
 ROOT_NODE           = 'ROOT'
-FLOAT_NODE = 'FLOAT'
-INT_NODE = 'INT'
-BOOL_NODE = 'BOOL'
+FLOAT_NODE          = 'FLOAT'
+INT_NODE            = 'INT'
+BOOL_NODE           = 'BOOL'
+ASSIGNMENT_NODE     = 'ASSIGNMENT'
 
 
 
-NODE_TYPES = [EMPTY_NODE,
+NODE_TYPES = [ASSIGNMENT_NODE,
+              BOOL_NODE,
+              EMPTY_NODE,
               FLOAT_NODE,
               FULL_IMPORT_NODE,
               ID_NODE,
               INT_NODE,
               PARTIAL_IMPORT_NODE,
               ROOT_NODE]
+
+############################
+# SYMBOLS TO COPY ON LEXER #
+############################
+ASSIGNMENT_SYMBOL = '='
+
+
 
 #############
 #############
@@ -261,8 +271,37 @@ class OneiASTNode:
                     self._value = tempVal
             else:
                 print('I am unsure what I received. YOU SHOULD NOT BE READING THIS')
+        elif stream.isSimpleStatement():
+            # Here we assume that the statement is properly implemented
+            if stream.search(ASSIGNMENT_SYMBOL):
+                self._nodeType = ASSIGNMENT_NODE
+                stream.toBeginning()
+                flag = True
+                leftStream = OneiStream()
+                rightStream = OneiStream()
+                while flag:
+                    tok = stream.next()
+                    if tok.getContent() == ASSIGNMENT_SYMBOL:
+                        flag = False
+                    else:
+                        leftStream.add(tok)
+                flag = True
+                while flag:
+                    tok = stream.next()
+                    if tok == None:
+                        flag = False
+                    elif tok.getContent() == END_LINE_SYMBOL:
+                        flag = False
+                    else:
+                        rightStream.add(tok)
+                self._leftChild = OneiASTNode()
+                self._leftChild.process(leftStream)
+                self._rightChild = OneiASTNode()
+                self._rightChild.process(rightStream)
+
+
         else:
-            pass
+            print('This option has not yet been implemented')
 
 
 
