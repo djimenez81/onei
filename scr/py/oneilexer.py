@@ -245,9 +245,9 @@ class OneiStream:
             isit = (content == self.next().getContent())
             k += 1
         return isit
-		
-		
-	def isSimpleStatement(self):
+
+
+    def isSimpleStatement(self):
         self.toBeginning()
         isit = True
         i = 0
@@ -256,10 +256,10 @@ class OneiStream:
             ltoken = self.next().getContent()
             isit = (ltoken not in ELEMENTS)
             if(';' == ltoken) and (i != self._tokenN):
-              isit = False
+                isit = False
         return isit
-		
-			
+
+
 
 
 class OneiLexer:
@@ -347,7 +347,11 @@ class OneiLexer:
         for char in line:
             if char == END_LINE_SYMBOL:
                 if self._currentState != SPACE_READ and len(thisUnit) > 0:
-                    self._stream.add(OneiToken(thisUnit,self._currentState))
+                    if len(thisUnit) > 0:
+                        if self._currentState == NAME and thisUnit in KEYWORDS:
+                            self._stream.add(OneiToken(thisUnit,KEYWORD))
+                        else:
+                            self._stream.add(OneiToken(thisUnit, self._currentState))
                     self._currentState = SPACE_READ
                     thisUnit = ''
                 self._stream.add(OneiToken(END_LINE_SYMBOL,END_LINE))
