@@ -259,6 +259,24 @@ class OneiStream:
                 isit = False
         return isit
 
+    def isControl(self):
+        nivel = 0
+        i = 0
+        if(self.first().getContent() in CTRLELEMENTS):
+            self.toBeginning()
+            while(i < self._tokenN):
+                ntoken = self.next().getContent()
+                if(ntoken in CTRLELEMENTS):
+                    nivel +=1
+                if(ntoken == 'end'):
+                    nivel -= 1
+                i += 1
+            if(nivel == 0) and (self.final().getContent() == 'end'):
+                return True
+            else:
+                return False
+        else:
+            return  False
 
 
 
