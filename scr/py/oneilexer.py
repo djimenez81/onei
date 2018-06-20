@@ -162,6 +162,9 @@ class OneiStream:
     def final(self):
         return self._stream[-1]
 
+    def position(self):
+        return self._nextP
+
     def toBeginning(self):
         self._nextP = 0
 
@@ -210,6 +213,53 @@ class OneiStream:
         else:
             return  False
 
+    def isFunctionCall(self):
+        # pdb.set_trace()
+        if self.isSimpleStatement():
+            parenCount = 0
+            if self.first().getType() == NAME:
+                flag = True
+                dotExpected = True
+                while flag:
+                    tok = self.next()
+                    if tok == None:
+                        return False
+                    elif dotExpected and tok.getContent() == DOT_SYMBOL:
+                        dotExpected = False
+                    elif dotExpected and tok.getContent() == LPAREN_SYMBOL:
+                        flag = False
+                        parenCount += 1
+                    elif not dotExpected and tok.getType() == NAME:
+                        dotExpected = True
+                    else:
+                        return False
+                tok = self.next()
+                flag = (tok != None)
+                while flag:
+                    if tok.getContent() == LPAREN_SYMBOL:
+                        parenCount += 1
+                    elif tok.getContent() == RPAREN_SYMBOL:
+                        parenCount -= 1
+                    if parenCount == 0:
+                        flag = False
+                    else:
+                        tok = self.next()
+                        flag = (tok != None)
+                delta = self.length() - self.position()
+                if parenCount > 0:
+                    return False
+                elif  delta > 1:
+                    return False
+                elif delta == 1 and self.next().getContent() == END_LINE_SYMBOL:
+                    return True
+                elif delta == 0:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
 
 
 class OneiLexer:
