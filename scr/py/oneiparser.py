@@ -71,66 +71,7 @@
 ###############
 import pdb #; pdb.set_trace()
 from oneilexer import *
-
-
-######################
-######################
-##                  ##
-## GLOBAL CONSTANTS ##
-##                  ##
-######################
-######################
-DEFINERS  = ['agent',   'environment',  'exchange', 'function', 'io',
-            'item',     'message',      'patch',    'rule',     'setup',
-            'table']
-
-SCOPERS   = ['for', 'if','while']
-
-ELSERS    = ['elseif', 'else']
-
-DECLARERS = ['attributes','input', 'output','variables']
-
-KEYWORDY = ['and',      'array',    'boolean',  'character',    'dictionary',
-            'extends',  'false',    'float',    'import',       'in',
-            'integer',  'list',     'not',      'or',           'pass',
-            'self',     'string',   'true',     'xor']
-
-END_SING   = 'end'
-COLON      = ':'
-BOOLEANS = ['true','false']
-
-
-
-##############
-# NODE TYPES #
-##############
-EMPTY_NODE          = 'EMPTY'
-FULL_IMPORT_NODE    = 'FULL_IMPORT'
-ID_NODE             = 'ID'
-PARTIAL_IMPORT_NODE = 'PARTIAL_IMPORT'
-ROOT_NODE           = 'ROOT'
-FLOAT_NODE          = 'FLOAT'
-INT_NODE            = 'INT'
-BOOL_NODE           = 'BOOL'
-ASSIGNMENT_NODE     = 'ASSIGNMENT'
-
-
-
-NODE_TYPES = [ASSIGNMENT_NODE,
-              BOOL_NODE,
-              EMPTY_NODE,
-              FLOAT_NODE,
-              FULL_IMPORT_NODE,
-              ID_NODE,
-              INT_NODE,
-              PARTIAL_IMPORT_NODE,
-              ROOT_NODE]
-
-############################
-# SYMBOLS TO COPY ON LEXER #
-############################
-ASSIGNMENT_SYMBOL = '='
-
+from oneiconstants import *
 
 
 #############

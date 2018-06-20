@@ -61,78 +61,10 @@
 ###############
 import pdb #; pdb.set_trace()
 from os.path import basename, dirname
-
-
-######################
-######################
-##                  ##
-## GLOBAL CONSTANTS ##
-##                  ##
-######################
-######################
-ELEMENTS = ['agent',   'environment',  'exchange', 'function', 'io',
-            'item',     'message',      'patch',    'rule',     'setup',
-            'table','for', 'if','while','elseif', 'else','attributes','input', 'output','variables','end',':']
-###############
-# STATE FLAGS #
-###############
-COMMENT_READ  = 'COMMENT' #
-SPACE_READ    = 'SPACE'   #
-STRING_READ   = 'STRING'  #
-DOT_READ      = 'DOT'     #
-
-
-######################
-# SPECIAL CHARACTERS #
-######################
-OPERATORS        = ['<-', '=', '==', '!=', '<', '>', '<=', '>=']
-DELIMITERS       = ':.,([{}])@'
-END_LINE_SYMBOL  = ';'
-CONTINUER_SYMBOL = '...'
-COMMENT_SYMBOL   = '#'
-STRING_SYMBOL    = '\"'
-DOT_SYMBOL       = '.'
-BIN_OPERATORS    = '+-*/^'
-COMPARATOR_SYMBS = '<>-=!'
-SPACE_SYMBOL     = ' '
-TAB_SYMBOL       = '\t'
-EXPONENT_SYMBOL  = 'e'
-UNDERSCORE       = '_'
-
-
-#########
-# TYPES #
-#########
-OPERATOR  = 'OPERATOR'
-DELIMITER = 'DELIMITER'
-UNKNOWN   = 'UNKNOWN'
-KEYWORD   = 'KEYWORD'
-NAME      = 'NAME'
-NUMBER    = 'NUMBER'
-END_LINE  = 'END_LINE'
+from oneiconstants import *
 
 
 
-FLOAT     = 'FLOAT'
-INTEGER   = 'INTEGER'
-
-
-
-
-######################
-# TOKEN DICTIONARIES #
-######################
-
-KEYWORDS = ['agent',        'and',          'array',        'attributes',
-            'boolean',      'character',    'dictionary',   'else',
-            'elseif',       'end',          'environment',  'exchange',
-            'extends',      'false',        'float',        'for',
-            'function',     'if',           'import',       'in',
-            'input',        'integer',      'io',           'item',
-            'list',         'message',      'not',          'or',
-            'output',       'pass',         'patch',        'rule',
-            'self',         'setup',         'string',      'table',
-            'true',         'variables',    'while',        'xor']
 
 #############
 #############
