@@ -49,6 +49,13 @@
 ELEMENTS = ['agent',   'environment',  'exchange', 'function', 'io',
             'item',     'message',      'patch',    'rule',     'setup',
             'table','for', 'if','while','elseif', 'else','attributes','input', 'output','variables','end',':']
+			
+CTRLELEMENTS = ['for', 'if','while']
+
+
+DEFELEMENTS = ['function','agent', 'environment','attributes','input', 'output','variables',  'array',    'boolean',  'character',    'dictionary',
+                'integer',  'list', 'float',  'string',  '=', '<-', 'item',     'message',      'patch',    'rule',     'setup', 'table', 'io',  'exchange']
+
 ###############
 # STATE FLAGS #
 ###############
