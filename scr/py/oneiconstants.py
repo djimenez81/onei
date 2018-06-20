@@ -49,7 +49,7 @@
 ELEMENTS = ['agent',   'environment',  'exchange', 'function', 'io',
             'item',     'message',      'patch',    'rule',     'setup',
             'table','for', 'if','while','elseif', 'else','attributes','input', 'output','variables','end',':']
-			
+
 CTRLELEMENTS = ['for', 'if','while']
 
 
@@ -81,6 +81,9 @@ SPACE_SYMBOL     = ' '
 TAB_SYMBOL       = '\t'
 EXPONENT_SYMBOL  = 'e'
 UNDERSCORE       = '_'
+LPAREN_SYMBOL    = '('
+RPAREN_SYMBOL    = ')'
+
 
 
 #########
