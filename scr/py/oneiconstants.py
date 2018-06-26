@@ -59,10 +59,11 @@ DEFELEMENTS = ['function','agent', 'environment','attributes','input', 'output',
 ###############
 # STATE FLAGS #
 ###############
-COMMENT_READ  = 'COMMENT' #
-SPACE_READ    = 'SPACE'   #
-STRING_READ   = 'STRING'  #
-DOT_READ      = 'DOT'     #
+COMMENT_READ   = 'COMMENT'   #
+SPACE_READ     = 'SPACE'     #
+STRING_READ    = 'STRING'    #
+DOT_READ       = 'DOT'       #
+DELIMITER_READ = 'DELIMITER' #
 
 
 ######################
