@@ -447,7 +447,7 @@ class OneiLexer:
                         thisUnit += char
                         self._currentState = DOT_READ
                     elif char == COMMENT_SYMBOL:
-                        self._currentState == COMMENT_READ
+                        self._currentState = COMMENT_READ
                     elif char == STRING_SYMBOL:
                         self._currentState = STRING_READ
                     else:
@@ -471,6 +471,7 @@ class OneiLexer:
                         self._currentState = DOT_READ
                     elif char in DELIMITERS:
                         self._stream.add(OneiToken(char, DELIMITER))
+                        self._currentState = DELIMITER_READ
                     elif char in BIN_OPERATORS:
                         self._stream.add(OneiToken(char, OPERATOR))
                     elif char == COMMENT_SYMBOL:
@@ -486,11 +487,11 @@ class OneiLexer:
                 elif char.isalpha():
                     self._stream.add(OneiToken(thisUnit, NUMBER))
                     self._stream.add(OneiToken(char,UNKNOWN))
-                    self._currentState == SPACE_READ
+                    self._currentState = SPACE_READ
                     thisUnit = ''
                 else:
                     self._stream.add(OneiToken(thisUnit, NUMBER))
-                    self._currentState == SPACE_READ
+                    self._currentState = SPACE_READ
                     thisUnit = ''
                     if char in COMPARATOR_SYMBS:
                         thisUnit += char
@@ -506,6 +507,27 @@ class OneiLexer:
                         self._currentState = COMMENT_READ
                     elif char == STRING_SYMBOL:
                         self._currentState = STRING_READ
+            elif self._currentState == DELIMITER_READ:
+                if char == STRING_SYMBOL:
+                    self._currentState = STRING_READ
+                elif char.isalpha():
+                    thisUnit += char
+                    self._currentState = NAME
+                elif char.isdigit():
+                    thisUnit += char
+                    self._currentState = NUMBER
+                elif char == DOT_SYMBOL:
+                    # thisUnit += char
+                    self._currentState = NAME
+                    # After a space, only a number can start with a dot.
+                elif char in DELIMITERS:
+                    self._stream.add(OneiToken(char, DELIMITER))
+                    # self._currentState = SPACE_READ
+                    thisUnit =''
+                elif char in COMPARATOR_SYMBS:
+                    thisUnit += char
+                    self._currentState = OPERATOR
+
         if self._currentState != SPACE_READ:
             # After finish reading, it is likely that the last word was not
             # entered in the split array.
