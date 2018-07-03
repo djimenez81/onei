@@ -102,32 +102,23 @@ def splitStream(stream):
         locstrm.add(tok)
         if cnt in DEFINERS:
             level += 1
-#            print(cnt)
-#            print(level)
             if startSubstream:
                 expectEnd      = True
                 startSubstream = False
         elif cnt == END_SING:
             level -= 1
-#            print(cnt)
-#            print(level)
             if level == 0:
                 lexParts.append(locstrm)
                 locstrm = OneiStream()
                 startSubstream = True
-#                pdb.set_trace()
             if declareOpen:
                 declareOpen = False
         elif cnt in SCOPERS:
             level += 1
-#            print(cnt)
-#            print(level)
         elif cnt in DECLARERS:
             if not declareOpen:
                 declareOpen = True
                 level += 1
-#            print(cnt)
-#            print(level)
         else:
             if startSubstream:
                 expectEnd      = False
