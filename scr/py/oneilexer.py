@@ -213,6 +213,38 @@ class OneiStream:
         else:
             return  False
 
+    def isDefinition(self):
+        nivel = 0
+        i = 0
+        if self.first().getContent() in DEFELEMENTS:
+            self.toBeginning()
+            while (i < self._tokenN):
+                ntoken = self.next().getContent()
+                if (ntoken in DEFELEMENTS):
+                    nivel += 1
+                if (ntoken == 'end'):
+                    nivel -= 1
+                i += 1
+            if (nivel == 0) and (self.final().getContent() == 'end'):
+                return True
+            else:
+                return False
+        elif self.first().getContent() in SIMPLEDEFELEMENTS:
+            if self.final().getContent() == ';':
+                return True
+            else:
+                return False
+        else:
+            self.toBeginning()
+            isit = False
+            i = 0
+            while (i < self._tokenN) and (not isit):
+                isit = (self.next().getContent() == '->') or (self.next().getContent() == '=')
+            if self.final().getContent() == ';':
+                return True
+            else:
+                return False
+
     def isFunctionCall(self):
         # pdb.set_trace()
         if self.isSimpleStatement():
