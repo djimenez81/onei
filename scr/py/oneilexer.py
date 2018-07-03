@@ -50,7 +50,26 @@
 ####################
 ####################
 
+# When it lexes something that ends with more than one delimiter, it adds an
+# empty demiliter. For example, if one writes the following line
 #
+# for k in range(n):
+#
+# it is lexed as:
+#
+# <token type="KEYWORD" value="for" />
+# <token type="NAME" value="k" />
+# <token type="KEYWORD" value="in" />
+# <token type="NAME" value="range" />
+# <token type="DELIMITER" value="(" />
+# <token type="NAME" value="n" />
+# <token type="DELIMITER" value=")" />
+# <token type="DELIMITER" value=":" />
+# <token type="DELIMITER" value="" />
+#
+# Note the last token. It should not be there.
+#
+
 
 ###############
 ###############
@@ -62,8 +81,6 @@
 import pdb #; pdb.set_trace()
 from os.path import basename, dirname
 from oneiconstants import *
-
-
 
 
 #############
@@ -136,6 +153,9 @@ class OneiStream:
     def length(self):
         return self._tokenN
 
+    def position(self):
+        return self._nextP-1
+
     ###########
     # METHODS #
     ###########
@@ -152,21 +172,28 @@ class OneiStream:
             return None
 
     def previous(self):
-        if self._nextP < 2:
+        if self._nextP < 1:
             return None
         else:
-            token = self._stream[self._nextP-2]
             self._nextP -= 1
+            token = self._stream[self._nextP]
             return token
 
     def final(self):
-        return self._stream[-1]
+        self._nextP = self._tokenN
+        return self.previous()
 
     def position(self):
         return self._nextP
 
     def toBeginning(self):
         self._nextP = 0
+
+    def inPosition(self,k):
+        if k >= self._tokenN:
+            return None
+        else:
+            return self._stream[k]
 
     def first(self):
         self._nextP = 0
@@ -214,52 +241,90 @@ class OneiStream:
             return  False
 
     def isFunctionCall(self):
-        # pdb.set_trace()
         if self.isSimpleStatement():
             parenCount = 0
-            if self.first().getType() == NAME:
-                flag = True
-                dotExpected = True
-                while flag:
-                    tok = self.next()
+            flag = True
+            tok = self.final()
+            isit = True
+            if tok.getContent() == END_LINE_SYMBOL:
+                tok = self.previous()
+                if tok.getContent() != RPAREN_SYMBOL:
+                    flag = False
+                    isit = False
+            elif tok.getContent() != RPAREN_SYMBOL:
+                flag = False
+                isit = False
+            while flag:
+                content = tok.getContent()
+                if content == END_LINE_SYMBOL:
+                    isit = False
+                    flag = False
+                elif content == RPAREN_SYMBOL:
+                    parenCount += 1
+                elif content == LPAREN_SYMBOL and parenCount > 0:
+                    parenCount -= 1
+                elif content == LPAREN_SYMBOL and parenCount == 0:
+                    isit = False
+                    flag = False
+                elif parenCount == 0 and (content in OPERATORS or
+                                          content in BIN_OPERATORS):
+                    isit = False
+                    flag = False
+                if flag:
+                    tok = self.previous()
                     if tok == None:
-                        return False
-                    elif dotExpected and tok.getContent() == DOT_SYMBOL:
-                        dotExpected = False
-                    elif dotExpected and tok.getContent() == LPAREN_SYMBOL:
                         flag = False
-                        parenCount += 1
-                    elif not dotExpected and tok.getType() == NAME:
-                        dotExpected = True
-                    else:
-                        return False
-                tok = self.next()
-                flag = (tok != None)
-                while flag:
-                    if tok.getContent() == LPAREN_SYMBOL:
-                        parenCount += 1
-                    elif tok.getContent() == RPAREN_SYMBOL:
-                        parenCount -= 1
-                    if parenCount == 0:
-                        flag = False
-                    else:
-                        tok = self.next()
-                        flag = (tok != None)
-                delta = self.length() - self.position()
-                if parenCount > 0:
-                    return False
-                elif  delta > 1:
-                    return False
-                elif delta == 1 and self.next().getContent() == END_LINE_SYMBOL:
-                    return True
-                elif delta == 0:
-                    return True
-                else:
-                    return False
-            else:
-                return False
+            return isit
         else:
             return False
+
+#    def isFunctionCall(self):
+#        # pdb.set_trace()
+#        if self.isSimpleStatement():
+#            parenCount = 0
+#            if self.first().getType() == NAME:
+#                flag = True
+#                dotExpected = True
+#                while flag:
+#                    tok = self.next()
+#                    if tok == None:
+#                        return False
+#                    elif dotExpected and tok.getContent() == DOT_SYMBOL:
+#                        dotExpected = False
+#                    elif dotExpected and tok.getContent() == LPAREN_SYMBOL:
+#                        flag = False
+#                        parenCount += 1
+#                    elif not dotExpected and tok.getType() == NAME:
+#                        dotExpected = True
+#                    else:
+#                        return False
+#                tok = self.next()
+#                flag = (tok != None)
+#                while flag:
+#                    if tok.getContent() == LPAREN_SYMBOL:
+#                        parenCount += 1
+#                    elif tok.getContent() == RPAREN_SYMBOL:
+#                        parenCount -= 1
+#                    if parenCount == 0:
+#                        flag = False
+#                    else:
+#                        tok = self.next()
+#                        flag = (tok != None)
+#                delta = self.length() - self.position()
+#                if parenCount > 0:
+#                    return False
+#                elif  delta > 1:
+#                    return False
+#                elif delta == 1 and self.next().getContent() == END_LINE_SYMBOL:
+#                    return True
+#                elif delta == 0:
+#                    return True
+#                else:
+#                    return False
+#            else:
+#                return False
+#        else:
+#            return False
 
 
 class OneiLexer:
@@ -345,6 +410,7 @@ class OneiLexer:
         # This method separates each line on the pieces that will be tokenized.
         thisUnit = ''
         for char in line:
+            # pdb.set_trace()
             if char == END_LINE_SYMBOL:
                 if self._currentState != SPACE_READ and len(thisUnit) > 0:
                     if len(thisUnit) > 0:
@@ -508,32 +574,38 @@ class OneiLexer:
                     elif char == STRING_SYMBOL:
                         self._currentState = STRING_READ
             elif self._currentState == DELIMITER_READ:
-                if char == STRING_SYMBOL:
-                    self._currentState = STRING_READ
-                elif char.isalpha():
-                    thisUnit += char
+                if char == DOT_SYMBOL:
+                    self._stream.add(OneiToken(DOT_SYMBOL, DELIMITER))
                     self._currentState = NAME
-                elif char.isdigit():
-                    thisUnit += char
-                    self._currentState = NUMBER
-                elif char == DOT_SYMBOL:
-                    # thisUnit += char
-                    self._currentState = NAME
-                    # After a space, only a number can start with a dot.
-                elif char in DELIMITERS:
-                    self._stream.add(OneiToken(char, DELIMITER))
-                    # self._currentState = SPACE_READ
-                    thisUnit =''
-                elif char in COMPARATOR_SYMBS:
-                    thisUnit += char
-                    self._currentState = OPERATOR
+                else:
+                    self._currentState = SPACE_READ
+                    if char == STRING_SYMBOL:
+                        self._currentState = STRING_READ
+                    elif char.isalpha():
+                        thisUnit += char
+                        self._currentState = NAME
+                    elif char.isdigit():
+                        thisUnit += char
+                        self._currentState = NUMBER
+                    elif char == DOT_SYMBOL:
+                        # thisUnit += char
+                        self._currentState = NAME
+                        # After a space, only a number can start with a dot.
+                    elif char in DELIMITERS:
+                        self._stream.add(OneiToken(char, DELIMITER))
+                        self._currentState = DELIMITER_READ
+                        # self._currentState = SPACE_READ
+                        thisUnit =''
+                    elif char in COMPARATOR_SYMBS:
+                        thisUnit += char
+                        self._currentState = OPERATOR
 
         if self._currentState != SPACE_READ:
             # After finish reading, it is likely that the last word was not
             # entered in the split array.
             if thisUnit in KEYWORDS:
                 self._stream.add(OneiToken(thisUnit, KEYWORD))
-            else:
+            elif self._currentState != DELIMITER_READ:
                 self._stream.add(OneiToken(thisUnit, self._currentState))
             # More lines might be splitted in the future, so, state must be left
             # in the appropriate state.
