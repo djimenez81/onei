@@ -83,50 +83,102 @@ from oneiparser import *
 #############
 
 
+# THESE FUNCTIONS WERE CREATED AT SOME POINT, BUT THEY WERE REPLACED BY OTHERS.
+# STILL, I THINK THEY COULD BE USED IN OTHER MOMENTS. SO, HERE THEY ARE, JUST IN
+# CASE.
+
+# def splitStream(stream):
+#     # This funtion is made to test splitting of the file.
+#     stream.toBeginning()
+#     N              = stream.length()
+#     k              = 0
+#     lexParts       = []
+#     level          = 0
+#     locstrm        = OneiStream()
+#     startSubstream = True # This boolean specified if a stream is starting
+#     expectEnd      = False
+#     declareOpen    = False
+#     while k < N:
+#         tok = stream.next()
+#         cnt = tok.getContent()
+#         locstrm.add(tok)
+#         if cnt in DEFINERS:
+#             level += 1
+#             if startSubstream:
+#                 expectEnd      = True
+#                 startSubstream = False
+#         elif cnt == END_SING:
+#             level -= 1
+#             if level == 0:
+#                 lexParts.append(locstrm)
+#                 locstrm = OneiStream()
+#                 startSubstream = True
+#             if declareOpen:
+#                 declareOpen = False
+#         elif cnt in SCOPERS:
+#             level += 1
+#         elif cnt in DECLARERS:
+#             if not declareOpen:
+#                 declareOpen = True
+#                 level += 1
+#         else:
+#             if startSubstream:
+#                 expectEnd      = False
+#                 startSubstream = False
+#             if cnt == SEMI_COLON:
+#                 if not expectEnd:
+#                     lexParts.append(locstrm)
+#                     locstrm        = OneiStream()
+#                     startSubstream = True
+#         k += 1
+#     return lexParts
 
 
-def splitStream(stream):
-    # This funtion is made to test splitting of the file.
-    stream.toBeginning()
-    N              = stream.length()
-    k              = 0
-    lexParts       = []
-    level          = 0
-    locstrm        = OneiStream()
-    startSubstream = True # This boolean specified if a stream is starting
-    expectEnd      = False
-    declareOpen    = False
-    while k < N:
-        tok = stream.next()
-        cnt = tok.getContent()
-        locstrm.add(tok)
-        if cnt in DEFINERS:
-            level += 1
-            if startSubstream:
-                expectEnd      = True
-                startSubstream = False
-        elif cnt == END_SING:
-            level -= 1
-            if level == 0:
-                lexParts.append(locstrm)
-                locstrm = OneiStream()
-                startSubstream = True
-            if declareOpen:
-                declareOpen = False
-        elif cnt in SCOPERS:
-            level += 1
-        elif cnt in DECLARERS:
-            if not declareOpen:
-                declareOpen = True
-                level += 1
-        else:
-            if startSubstream:
-                expectEnd      = False
-                startSubstream = False
-            if cnt == SEMI_COLON:
-                if not expectEnd:
-                    lexParts.append(locstrm)
-                    locstrm        = OneiStream()
-                    startSubstream = True
-        k += 1
-    return lexParts
+
+#    def isFunctionCall(self):
+#        # pdb.set_trace()
+#        if self.isSimpleStatement():
+#            parenCount = 0
+#            if self.first().getType() == NAME:
+#                flag = True
+#                dotExpected = True
+#                while flag:
+#                    tok = self.next()
+#                    if tok == None:
+#                        return False
+#                    elif dotExpected and tok.getContent() == DOT_SYMBOL:
+#                        dotExpected = False
+#                    elif dotExpected and tok.getContent() == LPAREN_SYMBOL:
+#                        flag = False
+#                        parenCount += 1
+#                    elif not dotExpected and tok.getType() == NAME:
+#                        dotExpected = True
+#                    else:
+#                        return False
+#                tok = self.next()
+#                flag = (tok != None)
+#                while flag:
+#                    if tok.getContent() == LPAREN_SYMBOL:
+#                        parenCount += 1
+#                    elif tok.getContent() == RPAREN_SYMBOL:
+#                        parenCount -= 1
+#                    if parenCount == 0:
+#                        flag = False
+#                    else:
+#                        tok = self.next()
+#                        flag = (tok != None)
+#                delta = self.length() - self.position()
+#                if parenCount > 0:
+#                    return False
+#                elif  delta > 1:
+#                    return False
+#                elif delta == 1 and self.next().getContent() == END_LINE_SYMBOL:
+#                    return True
+#                elif delta == 0:
+#                    return True
+#                else:
+#                    return False
+#            else:
+#                return False
+#        else:
+#            return False
