@@ -81,72 +81,42 @@ from oneiconstants import *
 ##         ##
 #############
 #############
-def splitStream(stream):
-    # This function makes a first pass to the stream received, trying to split
-    # it into its main components.
-    streamArray = []
-    tempStream = OneiStream()
-    stream.toBeginning()
-    N = stream.length()
-    k = 0
-    scopeCount = 0
-    scoping    = False
-    initiating = True
-    declaring  = False
-    while k < N:
-        k += 1
-        tok = stream.next()
-        tempStream.add(tok)
-        content = tok.getContent()
-        if initiating:
-            initiating = False
-            if content in DEFINERS:
-                scoping = True
-                scopeCount += 1
-        elif scoping:
-            if content in DECLARERS and not declaring:
-                declaring = True
-                scopeCount += 1
-            elif content in DEFINERS:
-                scopeCount += 1
-            elif content in SCOPERS:
-                scopeCount += 1
-            elif content == END_SING:
-                scopeCount -= 1
-                if declaring:
-                    declaring = False
-                if scopeCount == 0:
-                    streamArray.append(tempStream)
-                    tempStream = OneiStream()
-                    initiating = True
-                    scoping = False
-        else:
-            if content == END_LINE_SYMBOL:
-                streamArray.append(tempStream)
-                tempStream = OneiStream()
-                initiating = True
-    return streamArray
 
+
+###################
+###################
+###################
+###             ###
+###             ###
+###   CLASSES   ###
+###             ###
+###             ###
+###################
+###################
+###################
 
 #############
 #############
 ##         ##
-## CLASSES ##
+##  CLASS  ##
 ##         ##
 #############
 #############
-
-
-
-
 class OneiASTNode:
-    # This class implements a node in the Abstract Syntax Tree (AST).
+    # This class implements a node in the Abstract Syntax Tree (AST). It is not
+    # simply a container, and the parsing itself in a large messure happens on
+    # this class.
+    #
+    # EXAMPLE OF USE:
+    #
+    # node = OneiASTNode()
+    # node = OneiASTNode(NODE_TYPE)
+    #
 
     ###########
     # CREATOR #
     ###########
-    def __init__(self,nodeType=EMPTY_NODE):
-#        self._children = {}
+    def __init__(self, nodeType = EMPTY_NODE):
         self._leftChild  = None
         self._rightChild = None
         self._next       = None
@@ -160,28 +130,104 @@ class OneiASTNode:
     #######################
     # GETTERS AND SETTERS #
     #######################
-#     def getChildren(self):
-#         return self._children
 
+    ############
+    # FUNCTION #
+    ############
     def getLeftChild(self):
+        # Standard getter. It returns the left child node.
+        #
+        # EXAMPLE OF USE:
+        #
+        # left_child_node = node.getLeftChild()
+        #
         return self._leftChild
 
+    ############
+    # FUNCTION #
+    ############
     def getRightChild(self):
+        # Standard getter. It returns the right child node.
+        #
+        # EXAMPLE OF USE:
+        #
+        # right_child_node = node.getRightChild()
+        #
         return self._rightChild
 
+    ############
+    # FUNCTION #
+    ############
     def getNext(self):
+        # Standard getter. It returns the next node.
+        #
+        # EXAMPLE OF USE:
+        #
+        # next_node = node.getNext()
+        #
         return self._next
 
+    ############
+    # FUNCTION #
+    ############
     def getValue(self):
+        # Standard getter. It returns a string with the value of the node.
+        #
+        # EXAMPLE OF USE:
+        #
+        # value_string = node.getValue()
+        #
+        # NOTE: So far, this function makes no type checking.
+        #
         return self._value
 
+    ############
+    # FUNCTION #
+    ############
     def getType(self):
+        # Standard getter. It returns a string with the specification of the
+        # type of the node.
+        #
+        # EXAMPLE OF USE:
+        #
+        # type_string = node.getType()
+        #
+        # NOTE: So far, this function makes no type checking.
+        #
         return self._nodeType
 
-    ###########
-    # METHODS #
-    ###########
+    ######################## #####
+    #############################
+    ##                         ##
+    ##  FUNCTIONS AND METHODS  ##
+    ##                         ##
+    #############################
+    #############################
+
+    ##########
+    # METHOD #
+    ##########
     def process(self,stream):
+        # This method implements a lot of the logic of the parsing. It receives
+        # a stream, and if it can be directly parsed, it does, if not, it
+        # divides such stream into substreams and sends it back to itself.
+        #
+        # EXAMPLE OF USE:
+        #
+        # node.process(stream)
+        #
+        # NOTE: This function is in the process of being written. It is relevant
+        #       at this point to have a priority of operations to take as a base
+        #       of work.
+        #        - Assignment ('=')
+        #        - Logical predicate (and, or, xor, not)
+        #        - Comparison ('==', '!=', '>', etc)
+        #        - First order operation ('+', '-', include signed statements)
+        #        - Second order operation ('*', '/')
+        #        - Exponentials ('^')
+        #        - Subfuncion call (like in 'object.fun1(arg).fun2(arg1,arg2)')
+        #        - Function call
+        #
         if self._nodeType == ROOT_NODE:
             self._next       = None
             self._rightChild = None
@@ -239,24 +285,26 @@ class OneiASTNode:
                 self._leftChild.process(leftStream)
                 self._rightChild = OneiASTNode()
                 self._rightChild.process(rightStream)
-
-
         else:
             print('This option has not yet been implemented')
 
 
 
 class OneiAST:
-    # This class implements an Abstract Syntax Tree (AST) for Onei.
+    # This class implements an Abstract Syntax Tree (AST) for Onei. Thus far,
+    # most of the logic is in the node, and not in this class.
+    #
+    # EXAMPLE OF USE:
+    #
+    # ast = OneiAST(stream)
+    #
+    # NOTE: Thus far this is a container. It has absoltuely no logic, and has no
+    #       tools to modify the contents once these have been initialized.
+    #
 
     ##############
     # ATTRIBUTES #
     ##############
-#    _imports      = []
-#    _setup        = []
-#    _objectList   = []
-#    _functionList = []
-#    _typeTable    = []
     _root = OneiASTNode(ROOT_NODE)
     _searchTable  = {}
 
@@ -271,6 +319,12 @@ class OneiAST:
     # GETTERS AND SETTERS #
     #######################
     def getRoot(self):
+        # Standard getter. It returns the root node of the syntax tree.
+        #
+        # EXAMPLE OF USE:
+        #
+        # ast.getRoot()
+        #
         return self._root
 
     ###########
@@ -280,7 +334,13 @@ class OneiAST:
 
 
 class OneiParser:
-    # This class implements a parser for Onei.
+    # This class is the parser. At this point is just slightly more than a
+    # container.
+    #
+    # EXAMPLE OF USE:
+    #
+    # parser = OneiParser()
+    #
 
     ##############
     # ATTRIBUTES #
@@ -297,14 +357,37 @@ class OneiParser:
     #######################
     # GETTERS AND SETTERS #
     #######################
+
+    ############
+    # FUNCTION #
+    ############
     def getASTList(self):
+        # Standard getter. It returns a list of abstract syntax tree objects.
+        #
+        # EXAMPLE OF USE:
+        #
+        # ast_list = parser.getASTList()
+        #
         return self._ASTList
 
-    ###########
-    # METHODS #
-    ###########
+    #############################
+    #############################
+    ##                         ##
+    ##  FUNCTIONS AND METHODS  ##
+    ##                         ##
+    #############################
+    #############################
+
+    ##########
+    # METHOD #
+    ##########
     def add(self,stream):
         # This method takes a stream and adds it to the list of sintax trees.
+        #
+        # EXAMPLE OF USE:
+        #
+        # parser.add(stream)
+        #
         tempAST = OneiAST(stream)
         # tempAST.add(stream)
         self._ASTList.append(tempAST)
