@@ -31,6 +31,7 @@
 #         David Jimenez <david.jimenezlopez@ucr.ac.cr>
 # Assistants:
 #         Cristina Soto Rojas
+#         Laureano Marin
 
 # #############################################################################
 # ##  THIS FILE CONTAINS THE CONSTANTS NEEDED ON THE IMPLEMENTATION OF THE   ##
