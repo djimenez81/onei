@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # module oneiengine
 
-# Copyright (c) 2017 Universidad de Costa Rica
+# Copyright (c) 2018 Universidad de Costa Rica
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,8 @@
 #         David Jimenez <david.jimenezlopez@ucr.ac.cr>
 # Assistants:
 #         Cristina Soto Rojas
+#         Laureano Marin
+
 
 # #############################################################################
 # ##  THIS FILE SHOULD CONTAIN THE PARTS OF THE IMPLEMENTATION OF THE ENGINE ##
@@ -50,9 +52,24 @@
 ####################
 ####################
 
+# When it lexes something that ends with more than one delimiter, it adds an
+# empty demiliter. For example, if one writes the following line
 #
+# for k in range(n):
 #
+# it is lexed as:
 #
+# <token type="KEYWORD" value="for" />
+# <token type="NAME" value="k" />
+# <token type="KEYWORD" value="in" />
+# <token type="NAME" value="range" />
+# <token type="DELIMITER" value="(" />
+# <token type="NAME" value="n" />
+# <token type="DELIMITER" value=")" />
+# <token type="DELIMITER" value=":" />
+# <token type="DELIMITER" value="" />
+#
+# Note the last token. It should not be there.
 #
 
 
@@ -85,15 +102,11 @@ from oneiconstants import *
 #############
 #############
 class OneiToken:
-    # This class implements a basic lexical token object. For all purposes, it
-    # is simply a container of the tipe and content of the token in the stream.
-    # The container is, for the most part, static, in the sense that there is no
-    # setters, and thus, after creation, there is no tool to change those
-    # values.
+    # This class implements a basic lexical token object. Mainly a container.
     #
     # EXAMPLE OF USE:
     #
-    # token = OneiToken('function',KEYWORD)
+    # token = OneiToken(theContent, theType)
     #
 
     ##############
@@ -112,50 +125,44 @@ class OneiToken:
     #######################
     # GETTERS AND SETTERS #
     #######################
-
-    ############
-    # FUNCTION #
-    ############
     def getContent(self):
-        # Self explanatory. This funtion returns the string of content of the
+        # Standard getter. It returns the string containing the content of the
         # token.
         #
         # EXAMPLE OF USE:
         #
-        # content_string = token.getContent()
+        # str = token.getContent()
         #
         return self._content
 
-    ############
-    # FUNCTION #
-    ############
     def getType(self):
-        # Self explanatory. This funtion returns the string of type of the
+        # Standard getter. It returns the string containing the type of the
         # token.
         #
         # EXAMPLE OF USE:
         #
-        # type_string = token.getType()
+        # str = token.getType()
         #
         return self._type
 
 
 class OneiStream:
     # This class implements the token stream of the lexer that will be passed
-    # to the parser. It implements tools to traverse the stream, and to check
-    # if the string corresponds to different pieces of code.
+    # to the parser. It contains quite a bit of logic. Among other things, it
+    # implements a lot of the logic necessary to recognize the content of
+    # substreams to help at the time of parsing.
     #
     # EXAMPLE OF USE:
     #
-    # token = OneiStream()
+    # stream = OneiStream()
     #
 
     ##############
     # ATTRIBUTES #
     ##############
-    _stream = []
-    _tokenN = 0
-    _nextP  = 0
+    _stream = [] # List containing the tokens, in order, of the stream.
+    _tokenN = 0  # Ammount of tokens presently contained in the stream.
+    _nextP  = 0  # Current position on the stream.
 
     ###########
     # CREATOR #
@@ -168,86 +175,64 @@ class OneiStream:
     #######################
     # GETTERS AND SETTERS #
     #######################
-
-    ############
-    # FUNCTION #
-    ############
     def getStream(self):
-        # This method is a standard getter, and returns the list that contains
-        # all the tokens.
+        # Standard getter. It returns the list containing the list of tokens of
+        # the stream.
         #
         # EXAMPLE OF USE:
         #
-        # stream_token_list = token.getStream()
+        # listOfTokens = stream.getStream()
         #
-        # NOTE: Thus far we have not used this function, and it should be
-        #       considered for eliminations.
+        # NOTE: It might be a good idea to delete this method. It might not be
+        #       the best idea to allow access to the inner workings of the
+        #       container.
         #
         return self._stream
 
-
-    ############
-    # FUNCTION #
-    ############
     def length(self):
-        # This function returns a non negative integer that corresponds to the
-        # number of tokens contained in the stream.
+        # This function returns the length of the stream, that is, the amount of
+        # tokens in the stream at the present moment. It is implemented as a
+        # standard getter, as the object keeps track of the number of tokens
+        # that it contains.
         #
         # EXAMPLE OF USE:
         #
-        # length_number = token.length()
-        #
+        # theLength = stream.length()
         return self._tokenN
 
-
-    ############
-    # FUNCTION #
-    ############
     def position(self):
-        # This function returns a non negative integer that corresponds to the
-        # current position while traversing the stream.
+        # This function returns the current position on the stream. It is
+        # implemented as a standard getter, as the object itself keeps track of
+        # the position it is currently.
         #
         # EXAMPLE OF USE:
         #
-        # position_number = token.position()
+        # pos = stream.position()
         #
-        return self._nextP-1
+        # NOTE: We should check if this is being used. I think it is not as
+        #       necessary, and if it is not actively used, it would be advisable
+        #       to remove it.
+        #
+        return self._nextP
 
-    #############################
-    #############################
-    ##                         ##
-    ##  METHODS AND FUNCTIONS  ##
-    ##                         ##
-    #############################
-    #############################
-
-    ##########
-    # METHOD #
-    ##########
+    ###########
+    # METHODS #
+    ###########
     def add(self,token):
-        # This method takes a token object as the last element of the stream.
+        # This method adds a token to the stream. It also updates the length of
+        # the stream.
         #
         # EXAMPLE OF USE:
         #
-        # steam.add(token)
-        #
-        # NOTE: There is no implementation for type checking. This means that
-        #       currently, the user could add any object or variable to the
-        #       stream. Careful use should suggest that only tokens are used,
-        #       but it should be considered to implement such check.
+        # stream.add(token)
         #
         self._stream.append(token)
         self._tokenN += 1
 
 
-    ############
-    # FUNCTION #
-    ############
     def next(self):
-        # This function moves the current position in the stream to one position
-        # ahead, and returns the token object at that position. If the current
-        # position is already at the end of the stream, it returns a None
-        # object.
+        # This function returns the next token on the stream, and advances the
+        # current position by one.
         #
         # EXAMPLE OF USE:
         #
@@ -260,15 +245,9 @@ class OneiStream:
         else:
             return None
 
-
-    ############
-    # FUNCTION #
-    ############
     def previous(self):
-        # This function moves the current position in the stream to one position
-        # behind, and returns the token object at that position. If the current
-        # position is already at the beginning of the stream, it returns a None
-        # object.
+        # This function returns the previous token on the stream, and moves the
+        # current position one place back.
         #
         # EXAMPLE OF USE:
         #
@@ -281,12 +260,10 @@ class OneiStream:
             token = self._stream[self._nextP]
             return token
 
-    ############
-    # FUNCTION #
-    ############
+
     def final(self):
-        # This function moves the current position to the end of the stream,
-        # and returns the token object at that position.
+        # This function moves the current position to the end of the stream and
+        # returns the last token on it.
         #
         # EXAMPLE OF USE:
         #
@@ -295,67 +272,39 @@ class OneiStream:
         self._nextP = self._tokenN
         return self.previous()
 
-    ############
-    # FUNCTION #
-    ############
-    def position(self):
-        # This function returns the non negative integer denoting the position
-        # currently held within the stream.
-        #
-        # EXAMPLE OF USE:
-        #
-        # current_position_number = stream.position()
-        #
-        return self._nextP
 
-    ##########
-    # METHOD #
-    ##########
     def toBeginning(self):
-        # This method forces the current position to go to the beginning of the
-        # stream.
+        # This method takes the pointer of the current position to the start of
+        # the stream.
         #
         # EXAMPLE OF USE:
         #
         # stream.toBeginning()
         #
-        # NOTE: It should be asked if this method is actually necessary, as most
-        #       of its uses could be instead performed by the function 'first'.
-        #       Still, it has already been used in a few places on the code, so,
-        #       probably it will stay, at least until some major review comes.
-        #
         self._nextP = 0
 
 
-    ############
-    # FUNCTION #
-    ############
     def inPosition(self,k):
-        # This function recieves a non negative integer k, and returns the k-th
-        # token in the stream (there is a 0-th elemenet). If k is negative or k
-        # exceeds the number of elements in the stream, then it returns a None.
-        # This function does not affect the current position.
+        # This function returns the token in a given position on the stream,
+        # without modifying the current position. The index k indicates the
+        # position of the token desired.
         #
         # EXAMPLE OF USE:
         #
         # token = stream.inPosition(k)
         #
-        # NOTE: This function seems to have not yet been used, and it is not
-        #       necessarily consistent with the behavior of the other functions
-        #       and methods. Then, one could consider to remove it.
+        # NOTE: This function might not be necessary. If it is not used, I
+        #       recommend to remove it.
         #
-        if k >= self._tokenN or k < 0:
+        if k >= self._tokenN:
             return None
         else:
             return self._stream[k]
 
-    ############
-    # FUNCTION #
-    ############
+
     def first(self):
-        # This function moves the current position to the first element of the
-        # stream, returns such element, and moves the current position to the
-        # next position.
+        # This function moves the current position to the beggining of the
+        # stream and returns the first token on it.
         #
         # EXAMPLE OF USE:
         #
@@ -364,19 +313,14 @@ class OneiStream:
         self._nextP = 0
         return self.next()
 
-    ############
-    # FUNCTION #
-    ############
+
     def search(self,content):
-        # This function takes a string 'content' as an argument and searches the
-        # tokens of the stream to check whether or not there is one that has
-        # such content. It should be noted that this function returns only a
-        # boolean, and not the index or indices of the positions where the
-        # content appears, if it does.
+        # This function returns a boolean, that is true if the stream contains
+        # the content searched for, and returns false otherwise.
         #
         # EXAMPLE OF USE:
         #
-        # boolean_answer = stream.search(content)
+        # isit = stream.search(content)
         #
         self.toBeginning()
         isit = False
@@ -387,17 +331,15 @@ class OneiStream:
         return isit
 
 
-    ############
-    # FUNCTION #
-    ############
     def isSimpleStatement(self):
-        # This function goes over the stream, and checks if it corresponds to a
-        # simple statement, and returns a boolean with the anser. This is used
-        # mostly when parsing.
+        # This function returns a boolean, that is true if the stream is a
+        # simple statement, and return false otherwise. A simple statement is,
+        # basically, a piece of code that can be a line on the source, or part
+        # of a lineself.
         #
         # EXAMPLE OF USE:
         #
-        # boolean_answer = stream.isSimpleStatement()
+        # isit = stream.isSimpleStatement()
         #
         self.toBeginning()
         isit = True
@@ -406,21 +348,19 @@ class OneiStream:
             i += 1
             ltoken = self.next().getContent()
             isit = (ltoken not in ELEMENTS)
-            if(ltoken == END_LINE_SYMBOL) and (i != self._tokenN):
+            if(';' == ltoken) and (i != self._tokenN):
                 isit = False
         return isit
 
-    ############
-    # FUNCTION #
-    ############
+
     def isControl(self):
-        # This function goes over the stream, and checks if it corresponds to a
-        # a control statement, that is, an if, for or while. This function
-        # returns a boolean with the anser. This is used mostly when parsing.
+        # This function returns a boolean, that is true if the piece of code is
+        # a complete control statement, and false otherwise. A control statement
+        # is a structure of if, for or while.
         #
         # EXAMPLE OF USE:
         #
-        # boolean_answer = stream.isControl()
+        # isit = stream.isControl()
         #
         nivel = 0
         i = 0
@@ -440,18 +380,15 @@ class OneiStream:
         else:
             return  False
 
-    ############
-    # FUNCTION #
-    ############
+
     def isDefinition(self):
-        # This function goes over the stream, and checks if it corresponds to a
-        # a definition statement, that is, it is defining a function, or another
-        # type of object. This function returns a boolean with the anser. This
-        # is used mostly when parsing.
+        # This function returns a boolean, that is true if the stream is a
+        # single definition and false otherwise. This might be an Onei object,
+        # or it could be definition of variables (input, output or otherwise).
         #
         # EXAMPLE OF USE:
         #
-        # boolean_answer = stream.isDefinition()
+        # isit = stream.isDefinition()
         #
         nivel = 0
         i = 0
@@ -478,23 +415,21 @@ class OneiStream:
             isit = False
             i = 0
             while (i < self._tokenN) and (not isit):
-                isit = (self.next().getContent() == '->') or (self.next().getContent() == '=')
+                isit = (self.next().getContent() == '->')
+                        or (self.next().getContent() == '=')
             if self.final().getContent() == ';':
                 return True
             else:
                 return False
 
-    ############
-    # FUNCTION #
-    ############
     def isFunctionCall(self):
-        # This function goes over the stream, and checks if it corresponds to a
-        # a function call. This function returns a boolean with the anser. This
-        # is used mostly when parsing.
+        # This function returns a boolean, that is true if the stream is a
+        # function call and false otherwise. This might be an Onei object,
+        # or it could be definition of variables (input, output or otherwise).
         #
         # EXAMPLE OF USE:
         #
-        # boolean_answer = stream.isFunctionCall()
+        # isit = stream.isDefinition()
         #
         if self.isSimpleStatement():
             parenCount = 0
@@ -534,46 +469,21 @@ class OneiStream:
             return False
 
 
-    ############
-    # FUNCTION #
-    ############
-    def isOperation(self):
-        # This function reviews the stream and determines if it corresponds to
-        # an operation. An operation is anything that has two parts and an
-        # operand in the middle. For example:
-        #
-        # x * (y + 1)
-        #
-        # This function returns True if it considers the stream is an operation,
-        # and False otherwise.
-        #
-        # EXAMPLE OF USE:
-        #
-        # stream.isOperation()
-        #
-        # NOTE: This method has not been implemented.
-        #
-        pass
-
-
 
 class OneiLexer:
-    # This class implements the lexer object for the Onei language. This class
-    # contains a lot of behavior. The main function that is going to be used is
-    # 'tokenize', but most of the logic is on 'splitLine'. It should be noted
-    # that it contains quite a few getters, but no setter. Content should be
-    # set through behavior.
+    # This class implements the lexer of the language. It contains quite a bit
+    # of logic. Among other things, it implements a lot of the logic necessary
+    # to recognize the content of substreams to help at the time of parsing.
     #
     # EXAMPLE OF USE:
     #
     # lexer = OneiLexer()
     #
 
-
     ##############
     # ATTRIBUTES #
     ##############
-    _numberOfLines = 0
+    _numberOfLines = 0 # The number of lines contained on the file.
     _stream        = OneiStream() # stream is the final sequence of tokens.
     _lines         = []
     _currentState  = SPACE_READ # When the line has not been initiated, it is as
@@ -592,31 +502,24 @@ class OneiLexer:
         self._lines         = []
         self._currentState  = SPACE_READ
         self._tokenLine     = []
-        self._path          = ''
-        self._name          = ''
+        _path          = ''
+        _name          = ''
 
     #######################
     # GETTERS AND SETTERS #
     #######################
-
-    ############
-    # FUNCTION #
-    ############
     def getLines(self):
-        # This function returns the list of lines. The lines come from the text
-        # file read.
+        # Standard getter. It returns a list containing the strings of the lines
+        # of code in the file being lexed.
         #
         # EXAMPLE OF USE:
         #
-        # line_list = lexer.getLines()
+        # listOfLines = lexer.getLines()
         #
         return self._lines
 
-    ############
-    # FUNCTION #
-    ############
     def getStream(self):
-        # This function returns the stream object inside the lexer.
+        # Standard getter. It returns the stream object inside the lexer.
         #
         # EXAMPLE OF USE:
         #
@@ -624,74 +527,48 @@ class OneiLexer:
         #
         return self._stream
 
-    ############
-    # FUNCTION #
-    ############
     def getTokenLine(self):
-        # This function returns the list of token of lines. This is a list of
-        # pairs that indicates the number of the token that corresponds to the
-        # beginning of the line in question.
+        # Standard getter. It returns a list that contains a list of the lines
+        # and the specific token at the beginning.
         #
         # EXAMPLE OF USE:
         #
-        # token_line_list = lexer.getLines()
+        # tokenLine = lexer.getTokenLine()
         #
         return self._tokenLine
 
-    ############
-    # FUNCTION #
-    ############
     def getPath(self):
-        # This function returns the path where the file that was used to
-        # generate this lexer object.
+        # Standard getter. It returns a string with the path where the code
+        # being lexed is stored.
         #
         # EXAMPLE OF USE:
         #
-        # path_string = lexer.getPath()
-        #
-        # NOTE: This has not been yet used a lot. But it should, as soon we will
-        #       be generating parsing of multiple files.
+        # path = lexer.getPath()
         #
         return self._path
 
-    ############
-    # FUNCTION #
-    ############
     def getName(self):
-        # This function returns the name of the file that was used to generate
-        # this lexer object.
+        # Standard getter. It returns a string with the name of the file
+        # containing the code being lexed.
         #
         # EXAMPLE OF USE:
         #
-        # name_string = lexer.getName()
-        #
-        # NOTE: This has not been yet used a lot. But it should, as soon we will
-        #       be generating parsing of multiple files.
+        # path = lexer.getPath()
         #
         return self._name
 
 
-    ############################
-    ############################
-    ##                        ##
-    ##  METHODS AND FUNCTIONS ##
-    ##                        ##
-    ############################
-    ############################
-
-
-    ##########
-    # METHOD #
-    ##########
+    ###########
+    # METHODS #
+    ###########
     def tokenize(self, filename):
         # This method takes the file, and performes the tokenization, that is,
-        # it realizes the basic lexical analysis. This method does not have that
-        # much logic. It splits the file in lines, and passes everything to
-        # addLine.
+        # it realizes the basic lexical analysis. It takes a string filename
+        # (relative or absolute path included).
         #
         # EXAMPLE OF USE:
         #
-        # lexer.tokenize('file.onei')
+        # lexer.tokenize('path/file.onei')
         #
         self._path = dirname(filename)
         fullname = basename(filename)
@@ -706,17 +583,14 @@ class OneiLexer:
             self.addLine(line)
 
 
-    ##########
-    # METHOD #
-    ##########
     def addLine(self,line):
-        # This method takes a line of text from an onei file, makes a simple
-        # preprocessing and sends it to the method 'splitLine'. It also keeps
-        # track of the line numbering.
+        # This method adds a line to the list of lines, and sends it to be
+        # lexed. It takes as an argument a string containing a single line of
+        # code.
         #
         # EXAMPLE OF USE:
         #
-        # lexer.addLine(line_string)
+        # lexer.addLine(line)
         #
         self._numberOfLines += 1
         line = line.strip()
@@ -728,23 +602,19 @@ class OneiLexer:
                 self._tokenLine.append([self._numberOfLines, self._stream.length()])
 
 
-    ##########
-    # METHOD #
-    ##########
     def splitLine(self,line):
-        # This method contains most of the logic of the lexer. It takes a string
-        # and checks it iteratively character by character, looking for token
-        # boundaries, and interpreting each token as it comes, and adding it to
-        # the stream.
+        # This method separates each line on the pieces that will be tokenized.
+        # It takes a single line of code as input. This method contains most of
+        # the logic of the lexing.
         #
         # EXAMPLE OF USE:
         #
-        # lexer.splitLine(line_string)
+        # lexer.splitLine(line)
         #
         thisUnit = ''
         for char in line:
+            # pdb.set_trace()
             if char == END_LINE_SYMBOL:
-                # It first check if it is at the end of the line.
                 if self._currentState != SPACE_READ and len(thisUnit) > 0:
                     if len(thisUnit) > 0:
                         if self._currentState == NAME and thisUnit in KEYWORDS:
@@ -755,13 +625,10 @@ class OneiLexer:
                     thisUnit = ''
                 self._stream.add(OneiToken(END_LINE_SYMBOL,END_LINE))
             elif char == COMMENT_SYMBOL and self._currentState != COMMENT_READ:
-                # Second it checks if a comment is starting, or if it is already
-                # reading a comment.
                 if len(thisUnit) > 0:
                     self._stream.add(OneiToken(thisUnit, self._currentState))
                 self._currentState = COMMENT_READ
             elif self._currentState == STRING_READ:
-                # Checks if it is reading a string variable.
                 if char == STRING_SYMBOL:
                     self._stream.add(OneiToken(thisUnit, self._currentState))
                     self._currentState = SPACE_READ
@@ -769,7 +636,7 @@ class OneiLexer:
                 else:
                     thisUnit += char
             elif self._currentState == SPACE_READ:
-                # If previous character read was a space.
+                # If previous character read was a space
                 if char == STRING_SYMBOL:
                     self._currentState = STRING_READ
                 elif char.isalpha():
@@ -790,7 +657,6 @@ class OneiLexer:
                     thisUnit += char
                     self._currentState = OPERATOR
             elif char == SPACE_SYMBOL or char == TAB_SYMBOL:
-                # Checks for spaces or tabs.
                 if len(thisUnit) > 0:
                     if self._currentState == NAME and thisUnit in KEYWORDS:
                         self._stream.add(OneiToken(thisUnit,KEYWORD))
