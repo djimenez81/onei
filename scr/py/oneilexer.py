@@ -415,7 +415,7 @@ class OneiStream:
             isit = False
             i = 0
             while (i < self._tokenN) and (not isit):
-                isit = (self.next().getContent() == '->')
+                isit = (self.next().getContent() == '->') \
                         or (self.next().getContent() == '=')
             if self.final().getContent() == ';':
                 return True
@@ -770,6 +770,7 @@ class OneiLexer:
                         self._currentState = DOT_READ
                     elif char in DELIMITERS:
                         self._stream.add(OneiToken(char,DELIMITER))
+                        self._currentState = DELIMITER
                     elif char in BIN_OPERATORS:
                         self._stream.add(OneiToken(char,OPERATOR))
                     elif char == COMMENT_SYMBOL:
