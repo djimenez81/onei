@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # module oneiengine
 
-# Copyright (c) 2017 Universidad de Costa Rica
+# Copyright (c) 2018 Universidad de Costa Rica
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
 #         David Jimenez <david.jimenezlopez@ucr.ac.cr>
 # Assistants:
 #         Cristina Soto Rojas
+#         Laureano Marin
 
 # #############################################################################
 # ##  THIS FILE SHOULD CONTAIN THE PARTS OF THE IMPLEMENTATION OF THE ENGINE ##
@@ -70,7 +71,8 @@
 ###############
 ###############
 import pdb #; pdb.set_trace()
-from oneilexer import *
+from oneilexer     import *
+from oneiparser    import *
 from oneiconstants import *
 
 
