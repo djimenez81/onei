@@ -69,6 +69,14 @@ class OneiStream:
     # stream = OneiStream()
     #
 
+
+    # We need to implement:
+    #  - isAssignment
+    #  - isFormula
+    #     -- a+b-c*d
+    #     -- a==b or a>b
+    #  - isImport
+
     ##############
     # ATTRIBUTES #
     ##############
