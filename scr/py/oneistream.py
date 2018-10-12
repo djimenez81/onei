@@ -272,6 +272,148 @@ class OneiStream:
                 isit = False
         return isit
 
+    def isAssignment(self):
+        # This function returns a boolean, it is true if the stream is an
+        # assignment an false otherwise. Assigmente is : ID = expression
+        #
+        #EXAMPLE OF USE:
+        #
+        #isit = stream.isAssignment()
+        #
+        self.toBeginning()
+        isit = True
+        i = 0;
+        ltoken1 = self.next().getType()
+        ltoken2 = self.next().getContent()
+        if((ltoken1 == 'NAME') and  (ltoken2 == '=') ):
+            isit = True
+            number = True
+            operator = False
+            while (i < (self._tokenN -3)) and (isit):
+                type = self.next().getType()
+                if((type == 'NUMBER')and (number)):
+                    isit = True
+                    number = False
+                    operator = True
+                elif((type == 'OPERATOR')and(operator)):
+                    isit = True
+                    number = True
+                    opereator = False
+                else:
+                    isit = False
+                i += 1
+        else:
+            isit = False
+
+        return isit
+
+    def isImport(self):
+        # This function returns a boolean, it is true if the stream is an
+        # import an false otherwise. Import is :
+        #       Import: FROM ID IMPORT importList NL
+        #               | IMPORT importList NL
+        # And importlist:
+        #       importlist:  ID ',' importList
+        #                   | ID ';'
+        #
+        # EXAMPLE OF USE:
+        #
+        # isit = stream.isAssignment()
+        #
+        self.toBeginning()
+        isit = True
+        i = 0;
+        ltoken1 = self.next().getContent()
+        if (ltoken1 == 'FROM'):
+            ltoken2 = self.next().getType()
+            ltoken3 = self.next().getContent()
+            if ((ltoken2 == 'NAME') and (ltoken3 == 'IMPORT')):
+                isit = True
+                id = True
+                delimiter  = False
+                while (i < (self._tokenN - 3)) and (isit):
+                    type = self.next().getType()
+                    if ((type == 'NAME') and (id)):
+                        isit = True
+                        id = False
+                        delimiter = True
+                    elif ((type == 'DELIMITER') and (delimiter)):
+                        isit = True
+                        id = True
+                        delimiter = False
+                    else:
+                        isit = False
+                    i += 1
+            else:
+                isit = False
+        elif (ltoken1 == 'IMPORT'):
+            isit = True
+            id = True
+            delimiter = False
+            while (i < (self._tokenN - 1)) and (isit):
+                type = self.next().getType()
+                if ((type == 'NAME') and (id)):
+                    isit = True
+                    id = False
+                    delimiter = True
+                elif ((type == 'DELIMITER') and (delimiter)):
+                    isit = True
+                    id = True
+                    delimiter = False
+                else:
+                    isit = False
+                i += 1
+        else:
+            isit  = False
+        return isit
+
+    def isFormula(self):
+        # This function returns a boolean, it is true if the stream is an
+        # import an false otherwise. Formula is :
+        #       -- a+b-c*d
+        #       -- a==b or a>b
+        # EXAMPLE OF USE:
+        #
+        # isit = stream.isFormula()
+        #
+        #
+        self.toBeginning()
+        isit = True
+        i = 0;
+        ltoken1 = self.next().getType()
+        if ((ltoken1 == 'NUMBER')or(ltoken1 == 'NAME')):
+            if(3 == self._tokenN):
+                content = self.next().getContent()
+                type = self.next().getType
+                if(((content in OPERATORS)or (content in BIN_OPERATORS))) and ((type == 'NAME')or(type == 'NUMBER')):
+                    isit = True
+            else:
+                isit = True
+                operand = False
+                operator = True
+                while (i < (self._tokenN -1)) and (isit):
+                    nextToken = self.next()
+                    type = nextToken.getType()
+                    content = nextToken.getContent()
+                    if (((type == 'NAME')or(type == 'NUMBER')) and (operand)):
+                        isit = True
+                        operand = False
+                        operator = True
+                    elif ((content in  BIN_OPERATORS) and (operator)):
+                        isit = True
+                        operand = True
+                        operator = False
+                    else:
+                        isit = False
+                    i += 1
+                if(operand):
+                    isit = False
+        else:
+            isit = False
+        return isit
+
+
+
 
     def isControl(self):
         # This function returns a boolean, that is true if the piece of code is
