@@ -307,6 +307,7 @@ class OneiStream:
 
         return isit
 
+
     def isImport(self):
         # This function returns a boolean, it is true if the stream is an
         # import an false otherwise. Import is :
@@ -366,6 +367,7 @@ class OneiStream:
         else:
             isit  = False
         return isit
+
 
     def isFormula(self):
         # This function returns a boolean, it is true if the stream is an
