@@ -384,7 +384,7 @@ class OneiStream:
         i = 0;
         ltoken1 = self.next().getType()
         if ((ltoken1 == 'NUMBER')or(ltoken1 == 'NAME')):
-            if(3 == self._tokenN):
+            if((4 == self._tokenN)or(3 == self._tokenN)):
                 content = self.next().getContent()
                 type = self.next().getType
                 if(((content in OPERATORS)or (content in BIN_OPERATORS))) and ((type == 'NAME')or(type == 'NUMBER')):
@@ -405,6 +405,8 @@ class OneiStream:
                         isit = True
                         operand = True
                         operator = False
+                    elif (type == 'END_LINE'):
+                        end = True
                     else:
                         isit = False
                     i += 1
