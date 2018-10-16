@@ -120,13 +120,14 @@ INTEGER   = 'INTEGER'
 KEYWORDS = ['agent',        'and',          'array',        'attributes',
             'boolean',      'character',    'dictionary',   'else',
             'elseif',       'end',          'environment',  'exchange',
-            'extends',      'false',        'float',        'for',
-            'function',     'if',           'import',       'in',
-            'input',        'integer',      'io',           'item',
-            'list',         'message',      'not',          'or',
-            'output',       'pass',         'patch',        'rule',
-            'self',         'setup',         'string',      'table',
-            'true',         'variables',    'while',        'xor']
+            'extends',      'false',        'float',        'for',  
+			'from',			'function',     'if',           'import',       
+            'in',			'input',        'integer',      'io',           
+            'item',			'list',         'message',      'not',          
+            'or',			'output',       'pass',         'patch',        
+            'rule',			'self',         'setup',         'string',      
+            'table',		'true',         'variables',    'while',        
+			'xor']
 
 ######################
 ######################
