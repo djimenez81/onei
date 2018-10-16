@@ -291,7 +291,7 @@ class OneiStream:
             operator = False
             while (i < (self._tokenN -3)) and (isit):
                 type = self.next().getType()
-                if((type == 'NUMBER')and (number)):
+                if(((type == 'NUMBER')or(type == 'NAME'))and (number)):
                     isit = True
                     number = False
                     operator = True
