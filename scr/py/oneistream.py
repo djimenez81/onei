@@ -276,9 +276,17 @@ class OneiStream:
         # This function returns a boolean, it is true if the stream is an
         # assignment an false otherwise. Assigmente is : ID = expression
         #
-        #EXAMPLE OF USE:
+        # EXAMPLE OF USE:
         #
-        #isit = stream.isAssignment()
+        # isit = stream.isAssignment()
+        #
+        # Bug to address:
+        # It does not recognize assignment of subvariables as assignment. For
+        # example, given
+        #
+        # anObject.anAttribute = something;
+        #
+        # the function returns false, even when that is a valid assignment.
         #
         self.toBeginning()
         isit = True
@@ -320,6 +328,8 @@ class OneiStream:
         # EXAMPLE OF USE:
         #
         # isit = stream.isAssignment()
+        #
+        # It is buggy. Neither of the two basic cases works.
         #
         self.toBeginning()
         isit = True
@@ -378,6 +388,11 @@ class OneiStream:
         #
         # isit = stream.isFormula()
         #
+        # Bug:
+        # It is not addressing composite formulas. For example, it return false
+        # when it is entered the following formula:
+        #
+        # (a + b == 0) or (a < b);
         #
         self.toBeginning()
         isit = True

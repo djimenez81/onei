@@ -323,7 +323,7 @@ class OneiLexer:
                     thisUnit += char
                     self._currentState = NUMBER
                 elif char in BIN_OPERATORS:
-                        self._stream.add(OneiToken(char,OPERATOR))                
+                        self._stream.add(OneiToken(char,OPERATOR))
                 elif char == DOT_SYMBOL:
                     thisUnit += char
                     self._currentState = NUMBER
@@ -386,8 +386,8 @@ class OneiLexer:
                     self._stream.add(OneiToken(thisUnit,OPERATOR))
                     thisUnit = ''
                     if char.isdigit():
-						thisUnit += char
-						self._currentState = NUMBER
+                        thisUnit += char
+                        self._currentState = NUMBER
                     elif char.isalpha():
                         thisUnit = char
                         self._currentState = NAME
