@@ -335,13 +335,14 @@ class OneiStream:
         isit = True
         i = 0;
         ltoken1 = self.next().getContent()
+        isit = True
+        id = True
+        delimiter = False
+        final = False
         if (ltoken1 == 'FROM'):
             ltoken2 = self.next().getType()
             ltoken3 = self.next().getContent()
-            if ((ltoken2 == 'NAME') and (ltoken3 == 'IMPORT')):
-                isit = True
-                id = True
-                delimiter  = False
+            if ((ltoken2 == 'NAME') and (ltoken3 == 'import')):
                 while (i < (self._tokenN - 3)) and (isit):
                     type = self.next().getType()
                     if ((type == 'NAME') and (id)):
@@ -352,15 +353,15 @@ class OneiStream:
                         isit = True
                         id = True
                         delimiter = False
+                    elif ((type == 'END_LINE') and (not final)):
+                        isit = True
+                        final = False
                     else:
                         isit = False
                     i += 1
             else:
                 isit = False
-        elif (ltoken1 == 'IMPORT'):
-            isit = True
-            id = True
-            delimiter = False
+        elif (ltoken1 == 'import'):
             while (i < (self._tokenN - 1)) and (isit):
                 type = self.next().getType()
                 if ((type == 'NAME') and (id)):
@@ -371,13 +372,15 @@ class OneiStream:
                     isit = True
                     id = True
                     delimiter = False
+                elif((type == 'END_LINE')and (not final)):
+                    isit  = True
+                    final = False
                 else:
                     isit = False
                 i += 1
         else:
             isit  = False
         return isit
-
 
     def isFormula(self):
         # This function returns a boolean, it is true if the stream is an
