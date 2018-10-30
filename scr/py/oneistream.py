@@ -419,7 +419,7 @@ class OneiStream:
                         isit = True
                         operand = False
                         operator = True
-                    elif ((content in  BIN_OPERATORS) and (operator)):
+                    elif ((type == 'OPERATOR') and (operator)):
                         isit = True
                         operand = True
                         operator = False

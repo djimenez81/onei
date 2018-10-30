@@ -156,6 +156,11 @@ class OneiLexer:
     #
     # lexer = OneiLexer()
     #
+    # BUG REPORT:
+    #
+    # We need to make '=' an assignment and not an operator, so it does not
+    # confuse the stream.
+    #
 
     ##############
     # ATTRIBUTES #
@@ -337,7 +342,9 @@ class OneiLexer:
                     self._currentState = OPERATOR
             elif char == SPACE_SYMBOL or char == TAB_SYMBOL:
                 if len(thisUnit) > 0:
-                    if self._currentState == NAME and thisUnit in KEYWORDS:
+                    if self._currentState == NAME and thisUnit in OPERATORS:
+                        self._stream.add(OneiToken(thisUnit,OPERATOR))
+                    elif self._currentState == NAME and thisUnit in KEYWORDS:
                         self._stream.add(OneiToken(thisUnit,KEYWORD))
                     else:
                         self._stream.add(OneiToken(thisUnit, self._currentState))
@@ -411,7 +418,9 @@ class OneiLexer:
                 if char.isalpha() or char.isdigit() or char == UNDERSCORE:
                     thisUnit += char
                 else:
-                    if thisUnit in KEYWORDS:
+                    if thisUnit in OPERATORS:
+                        self._stream.add(OneiToken(thisUnit,OPERATOR))
+                    elif thisUnit in KEYWORDS:
                         self._stream.add(OneiToken(thisUnit,KEYWORD))
                     else:
                         self._stream.add(OneiToken(thisUnit,NAME))

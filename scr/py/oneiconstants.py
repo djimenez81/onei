@@ -76,7 +76,7 @@ DELIMITER_READ = 'DELIMITER' #
 ######################
 # SPECIAL CHARACTERS #
 ######################
-OPERATORS        = ['<-', '=', '==', '!=', '<', '>', '<=', '>=']
+OPERATORS        = ['<-', '=', '==', '!=', '<', '>', '<=', '>=', 'and', 'or', 'xor']
 DELIMITERS       = ':.,([{}])@'
 END_LINE_SYMBOL  = ';'
 CONTINUER_SYMBOL = '...'
@@ -120,13 +120,13 @@ INTEGER   = 'INTEGER'
 KEYWORDS = ['agent',        'and',          'array',        'attributes',
             'boolean',      'character',    'dictionary',   'else',
             'elseif',       'end',          'environment',  'exchange',
-            'extends',      'false',        'float',        'for',  
-			'from',			'function',     'if',           'import',       
-            'in',			'input',        'integer',      'io',           
-            'item',			'list',         'message',      'not',          
-            'or',			'output',       'pass',         'patch',        
-            'rule',			'self',         'setup',         'string',      
-            'table',		'true',         'variables',    'while',        
+            'extends',      'false',        'float',        'for',
+			'from',			'function',     'if',           'import',
+            'in',			'input',        'integer',      'io',
+            'item',			'list',         'message',      'not',
+            'or',			'output',       'pass',         'patch',
+            'rule',			'self',         'setup',         'string',
+            'table',		'true',         'variables',    'while',
 			'xor']
 
 ######################
