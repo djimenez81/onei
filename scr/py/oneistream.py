@@ -391,17 +391,21 @@ class OneiStream:
         #
         # isit = stream.isFormula()
         #
-        # Bug:
-        # It is not addressing composite formulas. For example, it return false
-        # when it is entered the following formula:
-        #
-        # (a + b == 0) or (a < b);
-        #
         self.toBeginning()
         isit = True
-        i = 0;
-        ltoken1 = self.next().getType()
-        if ((ltoken1 == 'NUMBER')or(ltoken1 == 'NAME')):
+        i = 0
+        open = 0
+        n = 1
+        ltoken1 = self.next()
+        content = ltoken1.getContent()
+        while content == '(':
+            open += 1
+            ltoken1 = self.next()
+            content = ltoken1.getContent()
+            n += 1
+
+        type = ltoken1.getType()
+        if ((type == 'NUMBER')or(type == 'NAME')):
             if((4 == self._tokenN)or(3 == self._tokenN)):
                 content = self.next().getContent()
                 type = self.next().getType
@@ -411,7 +415,7 @@ class OneiStream:
                 isit = True
                 operand = False
                 operator = True
-                while (i < (self._tokenN -1)) and (isit):
+                while (i < (self._tokenN -n)) and (isit):
                     nextToken = self.next()
                     type = nextToken.getType()
                     content = nextToken.getContent()
@@ -423,12 +427,23 @@ class OneiStream:
                         isit = True
                         operand = True
                         operator = False
+                    elif (type == 'DELIMITER'):
+                        isit = True
+                        if content == '(':
+                            open = open + 1
+                            operand = True
+                            operator = False
+                        elif content == ')':
+                            open = open - 1
+                            operand = False
+                            operator = True
+
                     elif (type == 'END_LINE'):
                         end = True
                     else:
                         isit = False
                     i += 1
-                if(operand):
+                if(operand or (open != 0)):
                     isit = False
         else:
             isit = False
