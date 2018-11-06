@@ -408,9 +408,11 @@ class OneiStream:
         if ((type == 'NUMBER')or(type == 'NAME')):
             if((4 == self._tokenN)or(3 == self._tokenN)):
                 content = self.next().getContent()
-                type = self.next().getType
+                type = self.next().getType()
                 if(((content in OPERATORS)or (content in BIN_OPERATORS))) and ((type == 'NAME')or(type == 'NUMBER')):
                     isit = True
+                else:
+                    isit =  False
             else:
                 isit = True
                 operand = False
