@@ -1,4 +1,4 @@
 *.xml
-scr/py/try.onei
-scr/py/script.py
-scr/py/__pycache__/
+src/py/try.onei
+src/py/script.py
+src/py/__pycache__/
