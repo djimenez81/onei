@@ -280,13 +280,11 @@ class OneiStream:
         #
         # isit = stream.isAssignment()
         #
-        # Bug to address:
-        # It does not recognize assignment of subvariables as assignment. For
-        # example, given
-        #
-        # anObject.anAttribute = something;
-        #
-        # the function returns false, even when that is a valid assignment.
+        # BUG #1: It does not recognize assignment of subvariables as
+        #         assignment. For example, given
+        #             anObject.anAttribute = something;
+        #         the function returns false, even when that is a valid
+        #         assignment.
         #
         self.toBeginning()
         isit = True
@@ -318,7 +316,7 @@ class OneiStream:
 
     def isImport(self):
         # This function returns a boolean, it is true if the stream is an
-        # import an false otherwise. Import is :
+        # import and false otherwise. Import is :
         #       Import: FROM ID IMPORT importList NL
         #               | IMPORT importList NL
         # And importlist:
@@ -329,7 +327,13 @@ class OneiStream:
         #
         # isit = stream.isAssignment()
         #
-        # It is buggy. Neither of the two basic cases works.
+        # BUG #1 An statement of the form
+        #            from stem import math;
+        #        returns false.
+        #
+        # BUG #2. Second and fifth line say exactly the same, and the 'isit'
+        #         value has not been modified in the meantime.
+        #
         #
         self.toBeginning()
         isit = True
@@ -383,8 +387,8 @@ class OneiStream:
         return isit
 
     def isFormula(self):
-        # This function returns a boolean, it is true if the stream is an
-        # import an false otherwise. Formula is :
+        # This function returns a boolean, it is true if the stream is a formula
+        # and false otherwise. A formula is:
         #       -- a+b-c*d
         #       -- a==b or a>b
         # EXAMPLE OF USE:
