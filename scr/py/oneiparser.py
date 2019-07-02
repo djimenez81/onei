@@ -254,8 +254,7 @@ class OneiASTNode:
                 else:
                     self._nodeType = INT_NODE
                 self._value = tempVal
-            elif tempType == KEYWORD:
-                if tempVal in BOOLEANS:
+            elif tempType == KEYWORD and tempVal in BOOLEANS:
                     self._nodeType = BOOL_NODE
                     self._value = tempVal
             else:
